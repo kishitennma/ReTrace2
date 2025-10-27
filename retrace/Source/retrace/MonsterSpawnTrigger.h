@@ -2,11 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "MovingMonster.h" 
 #include "MonsterSpawnTrigger.generated.h"
-
-class UBoxComponent;
-class AMovingMonster;
-class ASpawnPointActor;
 
 UCLASS()
 class RETRACE_API AMonsterSpawnTrigger : public AActor
@@ -19,18 +16,6 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-public:
-    UPROPERTY(VisibleAnywhere)
-    UBoxComponent* TriggerBox;
-
-    // Monster BP
-    UPROPERTY(EditAnywhere, Category = "Spawn")
-    TSubclassOf<AMovingMonster> MonsterClass;
-
-    // ★ レベルに置いた SpawnPoint の参照
-    UPROPERTY(EditAnywhere, Category = "Spawn")
-    ASpawnPointActor* SpawnPoint;
-
     UFUNCTION()
     void OnOverlapBegin(
         UPrimitiveComponent* OverlappedComp,
@@ -40,4 +25,17 @@ public:
         bool bFromSweep,
         const FHitResult& SweepResult
     );
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn") 
+        TSubclassOf<AMovingMonster> MonsterClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+    AActor* SpawnPoint; // 置いたアクタの Transform を使える
+
+private:
+    UPROPERTY(VisibleAnywhere)
+    class UBoxComponent* TriggerBox;
+
+    bool bHasSpawned = false;
 };

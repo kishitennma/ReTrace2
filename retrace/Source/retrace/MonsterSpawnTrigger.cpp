@@ -1,7 +1,7 @@
 #include "MonsterSpawnTrigger.h"
 #include "Components/BoxComponent.h"
-#include "MovingMonster.h"
-#include "SpawnPointActor.h"
+#include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
 
 AMonsterSpawnTrigger::AMonsterSpawnTrigger()
 {
@@ -10,17 +10,15 @@ AMonsterSpawnTrigger::AMonsterSpawnTrigger()
     TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
     RootComponent = TriggerBox;
 
-    TriggerBox->SetCollisionProfileName(TEXT("Trigger"));
+    TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    TriggerBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+    TriggerBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
 void AMonsterSpawnTrigger::BeginPlay()
 {
     Super::BeginPlay();
-
-    TriggerBox->OnComponentBeginOverlap.AddDynamic(
-        this,
-        &AMonsterSpawnTrigger::OnOverlapBegin
-    );
+    TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AMonsterSpawnTrigger::OnOverlapBegin);
 }
 
 void AMonsterSpawnTrigger::OnOverlapBegin(
@@ -32,25 +30,19 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
     const FHitResult& SweepResult
 )
 {
-    // SpawnPoint が指定されていない場合は終了
-    if (!SpawnPoint || !MonsterClass) return;
+    if (bHasSpawned) return;
+    if (!MonsterClass || !SpawnPoint) return;
 
-    FActorSpawnParameters Params;
+    FVector Location = SpawnPoint->GetActorLocation();
+    FRotator Rotation = SpawnPoint->GetActorRotation();
 
-    // ★ SpawnPoint の座標＆角度でスポーン！
-    FTransform SpawnTransform = SpawnPoint->GetActorTransform();
-
-    AMovingMonster* Monster = GetWorld()->SpawnActor<AMovingMonster>(
-        MonsterClass,
-        SpawnTransform,
-        Params
-    );
+    AMovingMonster* Monster = GetWorld()->SpawnActor<AMovingMonster>(MonsterClass, Location, Rotation);
 
     if (Monster)
     {
         Monster->ActivateMonster();
     }
 
-    // 条件に応じて一回きりなら破壊
-    // Destroy();
+    bHasSpawned = true;
 }
+

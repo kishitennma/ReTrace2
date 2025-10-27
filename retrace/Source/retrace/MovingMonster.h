@@ -14,19 +14,35 @@ public:
 
 protected:
     virtual void BeginPlay() override;
-
-public:
     virtual void Tick(float DeltaTime) override;
 
-    // 移動速度（Blueprint編集可）
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-    float MoveSpeed = 300.0f;
-
-    // 起動フラグ
-    UPROPERTY(BlueprintReadWrite)
-    bool bIsActive = false;
-
-    // 起動用関数（Blueprintでも呼べる）
+public:
+    // アクティブ化（Triggerから呼ぶ）
     UFUNCTION(BlueprintCallable)
     void ActivateMonster();
+
+    UFUNCTION()
+    void OnOverlapBegin(
+        UPrimitiveComponent* OverlappedComp,
+        AActor* OtherActor,
+        UPrimitiveComponent* OtherComp,
+        int32 OtherBodyIndex,
+        bool bFromSweep,
+        const FHitResult& SweepResult
+    );
+
+    
+
+
+    // BP で編集できる速度
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster")
+    float MoveSpeed = 300.0f;
+
+    // 移動中フラグ
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster")
+    bool bIsActive = false;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    class UBoxComponent* HitCollision;
+
 };
