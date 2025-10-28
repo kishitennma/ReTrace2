@@ -2,6 +2,8 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/Character.h"
+
 
 AMonsterSpawnTrigger::AMonsterSpawnTrigger()
 {
@@ -33,9 +35,11 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
     if (bHasSpawned) return;
     if (!MonsterClass || !SpawnPoint) return;
 
+    // SpawnPoint の位置と回転を取得
     FVector Location = SpawnPoint->GetActorLocation();
     FRotator Rotation = SpawnPoint->GetActorRotation();
 
+    // モンスターを出現
     AMovingMonster* Monster = GetWorld()->SpawnActor<AMovingMonster>(MonsterClass, Location, Rotation);
 
     if (Monster)

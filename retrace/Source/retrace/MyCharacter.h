@@ -16,7 +16,7 @@ UCLASS()
 class RETRACE_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
+public:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;

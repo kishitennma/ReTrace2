@@ -22,6 +22,7 @@ AMovingMonster::AMovingMonster()
 void AMovingMonster::BeginPlay()
 {
     Super::BeginPlay();
+   
     HitCollision->OnComponentBeginOverlap.AddDynamic(this, &AMovingMonster::OnOverlapBegin);
 }
 
@@ -34,6 +35,8 @@ void AMovingMonster::Tick(float DeltaTime)
         FVector NewLocation = GetActorLocation() + GetActorForwardVector() * MoveSpeed * DeltaTime;
         SetActorLocation(NewLocation, false); 
     }
+
+    
 }
 
 void AMovingMonster::ActivateMonster()
@@ -61,3 +64,6 @@ void AMovingMonster::OnOverlapBegin(
         }
     }
 }
+
+
+

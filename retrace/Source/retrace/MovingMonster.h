@@ -31,6 +31,7 @@ public:
         const FHitResult& SweepResult
     );
 
+
     
 
 
@@ -44,5 +45,7 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
     class UBoxComponent* HitCollision;
+
+   
 
 };

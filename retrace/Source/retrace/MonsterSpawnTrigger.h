@@ -33,9 +33,19 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     AActor* SpawnPoint; // 置いたアクタの Transform を使える
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+    FVector LocalCameraOffset;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+    FRotator CameraRotationOffset;
+
 private:
     UPROPERTY(VisibleAnywhere)
     class UBoxComponent* TriggerBox;
+
+    
+
+  
 
     bool bHasSpawned = false;
 };
