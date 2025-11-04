@@ -1,7 +1,9 @@
-#include "MonsterSpawnTrigger.h"
+ï»¿#include "MonsterSpawnTrigger.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
+#include "MyCharacter.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Character.h"
 
 
@@ -35,11 +37,11 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
     if (bHasSpawned) return;
     if (!MonsterClass || !SpawnPoint) return;
 
-    // SpawnPoint ‚ÌˆÊ’u‚Æ‰ñ“]‚ðŽæ“¾
+    // SpawnPoint ã®ä½ç½®ã¨å›žè»¢ã‚’å–å¾—
     FVector Location = SpawnPoint->GetActorLocation();
     FRotator Rotation = SpawnPoint->GetActorRotation();
 
-    // ƒ‚ƒ“ƒXƒ^[‚ðoŒ»
+    // ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã‚’å‡ºç¾
     AMovingMonster* Monster = GetWorld()->SpawnActor<AMovingMonster>(MonsterClass, Location, Rotation);
 
     if (Monster)
@@ -47,6 +49,16 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
         Monster->ActivateMonster();
     }
 
+    if (AMyCharacter* Player = Cast<AMyCharacter>(OtherActor))
+    {
+        Player->bUseCustomCamera = true;
+        Player->CameraOffset = NewCameraOffset;
+        Player->CameraAngle = NewCameraRotation;
+       
+    }
+
     bHasSpawned = true;
 }
+
+
 
