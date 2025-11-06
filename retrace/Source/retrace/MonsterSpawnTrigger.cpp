@@ -47,14 +47,46 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
     if (Monster)
     {
         Monster->ActivateMonster();
+
+        AMonsterEffectManager* EffectManager = Cast<AMonsterEffectManager>(
+            UGameplayStatics::GetActorOfClass(GetWorld(), AMonsterEffectManager::StaticClass()));
+
+        // 例：MonsterSpawnTrigger.cpp の OnOverlapBegin の中で
+        if (EffectManager == nullptr)
+        {
+            EffectManager = Cast<AMonsterEffectManager>(
+                UGameplayStatics::GetActorOfClass(GetWorld(), AMonsterEffectManager::StaticClass())
+            );
+        }
+
+        if (EffectManager)
+        {
+            EffectManager->ApplyEffect(1.0f);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("EffectManager is NULL!"));
+        }
     }
 
     if (AMyCharacter* Player = Cast<AMyCharacter>(OtherActor))
     {
-        Player->bUseCustomCamera = true;
-        Player->CameraOffset = NewCameraOffset;
-        Player->CameraAngle = NewCameraRotation;
-       
+        // --- カメラをワールド回転モードにする ---
+        Player->CameraBoom->SetUsingAbsoluteRotation(true);
+
+        // ステージの固定方向を向かせる（たとえば少し俯瞰）
+        Player->CameraBoom->SetWorldRotation(NewCameraRotation);
+
+        // カメラ距離（ズーム距離）
+        Player->CameraBoom->TargetArmLength = NewCameraDistance;
+
+        // キャラ位置に対して固定オフセット（ローカル相対位置）
+        Player->CameraBoom->SetRelativeLocation(NewCameraOffset);
+
+        UE_LOG(LogTemp, Warning, TEXT("BP値確認: Offset=%s, Rotation=%s, Distance=%f"),
+            *NewCameraOffset.ToString(),
+            *NewCameraRotation.ToString(),
+            NewCameraDistance);
     }
 
     bHasSpawned = true;

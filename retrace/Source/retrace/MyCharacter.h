@@ -46,15 +46,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
 
-	/** カスタムカメラ設定（BPから変更可能） */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Custom")
-	float CameraDistance = 400.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Custom")
-	FRotator CameraAngle = FRotator(-10.f, 0.f, 0.f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Custom")
-	FVector CameraOffset = FVector(0.f, 0.f, 100.f);
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Custom")
 	bool bUseCustomCamera = false;

@@ -37,13 +37,13 @@ public:
 
     // ---- ÉJÉÅÉâïœçXê›íË ----
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-    FVector NewCameraOffset = FVector(100, 0, 130.0f);
+    FVector NewCameraOffset ;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-    FRotator NewCameraRotation = FRotator(0.f, 25.f, 0.f);
+    FRotator NewCameraRotation ;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Change")
-    float NewCameraDistance = 400.f;
+    float NewCameraDistance ;
 
 private:
     UPROPERTY(VisibleAnywhere)

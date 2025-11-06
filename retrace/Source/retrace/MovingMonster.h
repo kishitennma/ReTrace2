@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "MonsterEffectManager.h"
 #include "MovingMonster.generated.h"
 
 UCLASS()
@@ -33,7 +34,8 @@ public:
 
 
     
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
+    AMonsterEffectManager* EffectManager;
 
     // BP Ç≈ï“èWÇ≈Ç´ÇÈë¨ìx
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster")

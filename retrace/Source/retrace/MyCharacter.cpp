@@ -26,17 +26,21 @@ AMyCharacter::AMyCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 
-	// キャラクターの位置には追従するが、回転は無視
+	// 親（キャラクター）の回転を一切継承しない
 	CameraBoom->bInheritPitch = false;
 	CameraBoom->bInheritYaw = false;
 	CameraBoom->bInheritRoll = false;
-	CameraBoom->SetUsingAbsoluteRotation(true);  // 回転を絶対値にする
-	CameraBoom->bDoCollisionTest = false;        // 壁にぶつかってもズームしない
 
-	// カメラ距離・角度
-	CameraBoom->TargetArmLength = 400.f;
+	// 角度を絶対指定（＝ステージ奥方向固定）
+	CameraBoom->SetUsingAbsoluteRotation(true);
+	CameraBoom->SetWorldRotation(FRotator(-10.f, 0.f, 0.f)); // ←ここを基準方向に調整
+
+	// 位置（高さ）をキャラから固定オフセット
 	CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, 80.f));
-	CameraBoom->SetRelativeRotation(FRotator(-10.f, 0.f, 0.f));
+	CameraBoom->TargetArmLength = 400.f;
+	CameraBoom->bDoCollisionTest = false;
+
+	
 
 	// ★ カメラ設定
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -58,13 +62,13 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// カメラのワールド位置をキャラクターの位置に追従
-	if (CameraBoom)
-	{
-		FVector PlayerPos = GetActorLocation();
-		FVector Offset = CameraBoom->GetRelativeLocation();
-		CameraBoom->SetWorldLocation(PlayerPos + Offset);
-	}
+	//// カメラのワールド位置をキャラクターの位置に追従
+	//if (CameraBoom)
+	//{
+	//	FVector PlayerPos = GetActorLocation();
+	//	FVector Offset = CameraBoom->GetRelativeLocation();
+	//	CameraBoom->SetWorldLocation(PlayerPos + Offset);
+	//}
 }
 
 void AMyCharacter::NotifyControllerChanged()
