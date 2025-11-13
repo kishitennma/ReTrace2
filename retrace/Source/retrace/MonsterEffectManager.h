@@ -2,12 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Camera/CameraShakeBase.h"
-#include "Engine/PostProcessVolume.h"
 #include "MonsterEffectManager.generated.h"
 
-
 class AMovingMonster;
+class AMyCharacter;
+class APostProcessVolume;
+
 UCLASS()
 class RETRACE_API AMonsterEffectManager : public AActor
 {
@@ -16,30 +16,26 @@ class RETRACE_API AMonsterEffectManager : public AActor
 public:
     AMonsterEffectManager();
 
-    //virtual void Tick(float DeltaTime);
+protected:
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
 
-    // MonsterEffectManager.h
+    void ApplyEffect(float Intensity);
+    void ClearEffect();
+
+private:
+    UPROPERTY()
+    APostProcessVolume* PostProcessVolume;
+
     UPROPERTY()
     AMovingMonster* Monster;
 
     UPROPERTY()
-    ACharacter* Player;
+    AMyCharacter* Player;
 
+    float CurrentIntensity = 0.f;
+    float MaxDistance = 2000.f; // エフェクトが最大になる距離
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PostProcess")
-    APostProcessVolume* PostProcessVolume;
-
-    // 敵が近づいたときに呼ぶ
-    UFUNCTION(BlueprintCallable)
-    void ApplyEffect(float Intensity);
-
-    UFUNCTION(BlueprintCallable)
-    void ClearEffect();
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shake")
-    TSubclassOf<UCameraShakeBase> CameraShakeClass;
-
-private:
-    float CurrentIntensity = 0.0f;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CameraShake")
+    TSubclassOf<class UCameraShakeBase> CameraShakeClass;
 };

@@ -36,18 +36,9 @@ void AMovingMonster::Tick(float DeltaTime)
         SetActorLocation(NewLocation, false); 
     }
 
-    ACharacter* Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-    if (!Player || !EffectManager) return;
+  
 
-    float Distance = FVector::Dist(Player->GetActorLocation(), GetActorLocation());
-    float Intensity = 0.0f;
-
-    if (Distance < 1500.f)
-    {
-        Intensity = 1.0f - (Distance / 1500.f);
-    }
-
-    EffectManager->ApplyEffect(Intensity);
+  
 
     
 }

@@ -46,7 +46,7 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
 
     if (Monster)
     {
-        Monster->ActivateMonster();
+       
 
         AMonsterEffectManager* EffectManager = Cast<AMonsterEffectManager>(
             UGameplayStatics::GetActorOfClass(GetWorld(), AMonsterEffectManager::StaticClass()));
@@ -59,10 +59,13 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
             );
         }
 
+        Monster->ActivateMonster();
         if (EffectManager)
         {
-            EffectManager->ApplyEffect(1.0f);
+            EffectManager->Monster = Monster;
         }
+
+      
         else
         {
             UE_LOG(LogTemp, Warning, TEXT("EffectManager is NULL!"));
