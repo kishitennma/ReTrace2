@@ -36,42 +36,35 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
 {
     if (bHasSpawned) return;
     if (!MonsterClass || !SpawnPoint) return;
+    if (!OtherActor) return;
+    // --- Spawn transform を SpawnPoint から取得 ---
+    FTransform SpawnTransform = SpawnPoint->GetActorTransform();
 
-    // SpawnPoint の位置と回転を取得
-    FVector Location = SpawnPoint->GetActorLocation();
-    FRotator Rotation = SpawnPoint->GetActorRotation();
+    // SpawnParameters（必要ならオプションを設定）
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-    // モンスターを出現
-    AMovingMonster* Monster = GetWorld()->SpawnActor<AMovingMonster>(MonsterClass, Location, Rotation);
-
-    if (Monster)
+    // モンスターをスポーン
+    AMovingMonster* SpawnedMonster = GetWorld()->SpawnActor<AMovingMonster>(MonsterClass, SpawnTransform, SpawnParams);
+    if (SpawnedMonster)
     {
-       
-
-        AMonsterEffectManager* EffectManager = Cast<AMonsterEffectManager>(
-            UGameplayStatics::GetActorOfClass(GetWorld(), AMonsterEffectManager::StaticClass()));
-
-        // 例：MonsterSpawnTrigger.cpp の OnOverlapBegin の中で
-        if (EffectManager == nullptr)
-        {
-            EffectManager = Cast<AMonsterEffectManager>(
-                UGameplayStatics::GetActorOfClass(GetWorld(), AMonsterEffectManager::StaticClass())
-            );
-        }
-
-        Monster->ActivateMonster();
-        if (EffectManager)
-        {
-            EffectManager->Monster = Monster;
-        }
-
-      
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("EffectManager is NULL!"));
-        }
+        SpawnedMonster->ActivateMonster(); // 既存メソッド
     }
 
+    // --- プレイヤー取得 ---
+    ACharacter* PlayerChar = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+    // または OtherActor がプレイヤーなら:
+    // ACharacter* PlayerChar = Cast<ACharacter>(OtherActor);
+
+   
+    AMonsterEffectManager* EffectManager = Cast<AMonsterEffectManager>(
+        UGameplayStatics::GetActorOfClass(GetWorld(), AMonsterEffectManager::StaticClass())
+    );
+    // --- EffectManager があればターゲットを渡す ---
+    if (EffectManager && PlayerChar && SpawnedMonster)
+    {
+        EffectManager->SetTargets(PlayerChar, SpawnedMonster);
+    }
     if (AMyCharacter* Player = Cast<AMyCharacter>(OtherActor))
     {
         // --- カメラをワールド回転モードにする ---

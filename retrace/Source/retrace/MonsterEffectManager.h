@@ -2,11 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Camera/CameraComponent.h"
 #include "MonsterEffectManager.generated.h"
 
-class AMovingMonster;
-class AMyCharacter;
 class APostProcessVolume;
+class AMovingMonster;
+class ACharacter;
 
 UCLASS()
 class RETRACE_API AMonsterEffectManager : public AActor
@@ -15,27 +16,37 @@ class RETRACE_API AMonsterEffectManager : public AActor
 
 public:
     AMonsterEffectManager();
+    virtual void Tick(float DeltaTime) override;
+    // 呼ばれたときにエフェクトを更新
+    void UpdateEffect(ACharacter* Player, AActor* Monster);
+
+    UPROPERTY()
+    ACharacter* PlayerRef;
+
+    UPROPERTY()
+    AActor* MonsterRef;
+
+    UFUNCTION(BlueprintCallable)
+    void SetTargets(ACharacter* Player, AActor* Monster);
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+    TSubclassOf<AMovingMonster> MonsterClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+    AActor* SpawnPoint;
+
+    
 
 protected:
     virtual void BeginPlay() override;
-    virtual void Tick(float DeltaTime) override;
-
-    void ApplyEffect(float Intensity);
-    void ClearEffect();
 
 private:
-    UPROPERTY()
+    // ポストプロセスボリューム
     APostProcessVolume* PostProcessVolume;
+   
+    // 赤み・Vignette・揺れ強度
+    float CurrentIntensity;
 
-    UPROPERTY()
-    AMovingMonster* Monster;
-
-    UPROPERTY()
-    AMyCharacter* Player;
-
-    float CurrentIntensity = 0.f;
-    float MaxDistance = 2000.f; // エフェクトが最大になる距離
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CameraShake")
-    TSubclassOf<class UCameraShakeBase> CameraShakeClass;
+    // カメラ揺れの最大幅
+    float ShakeAmount;
 };
