@@ -47,12 +47,32 @@ public:
 	UInputAction* MoveAction;
 
 	
-
+	//カメラの揺れ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Custom")
 	bool bUseCustomCamera = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
+	float ShakeIntensity = 20.0f;   // 揺れの強さ（位置揺れ）
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
+	float ShakeDuration = 1.0f;     // 継続時間
+
+	float ShakeTimer = 0.0f;
+	bool bIsShaking = false;
+
+	UFUNCTION()
+	void StartCameraShake(float Intensity, float Duration);
+
 
 private:
 	float DefaultDistance;
 	FRotator DefaultAngle;
 	FVector DefaultOffset;
+
+
+
+
+	
+	
+	FVector OriginalCameraOffset;
 };

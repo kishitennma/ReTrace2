@@ -64,4 +64,5 @@ private:
   
 
     bool bHasSpawned = false;
+    bool BreakWall;
 };

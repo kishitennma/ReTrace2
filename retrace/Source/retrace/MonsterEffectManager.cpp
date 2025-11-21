@@ -58,3 +58,5 @@ void AMonsterEffectManager::UpdateEffect(ACharacter* Player, AActor* Monster)
     Settings.VignetteIntensity = FMath::Lerp(0.3f, 2.5f, Intensity);
     Settings.SceneColorTint = FLinearColor(1.f, 1.f - 0.6f * Intensity, 1.f - 0.6f * Intensity);
 }
+
+

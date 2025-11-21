@@ -65,6 +65,13 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
         }
     }
 
+    if (AMyCharacter* Player = Cast<AMyCharacter>(OtherActor))
+    {
+        Player->StartCameraShake(40.0f, 1.5f);   // 足音の衝撃に応じて
+    }
+
+
+    
     // --- プレイヤー取得 ---
     ACharacter* PlayerChar = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
     // または OtherActor がプレイヤーなら:

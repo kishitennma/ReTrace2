@@ -40,6 +40,8 @@ void AGoalActor::OnOverlapBegin(
 {
     if (!Cast<ACharacter>(OtherActor)) return;
     if (HasActive) return;
+
+
     if (ClearWidgetClass)
     {
         UUserWidget* ClearWidget = CreateWidget<UUserWidget>(GetWorld(), ClearWidgetClass);

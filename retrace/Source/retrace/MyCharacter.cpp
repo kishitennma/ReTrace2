@@ -62,13 +62,29 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//// カメラのワールド位置をキャラクターの位置に追従
-	//if (CameraBoom)
-	//{
-	//	FVector PlayerPos = GetActorLocation();
-	//	FVector Offset = CameraBoom->GetRelativeLocation();
-	//	CameraBoom->SetWorldLocation(PlayerPos + Offset);
-	//}
+	if (bIsShaking && CameraBoom)
+	{
+		ShakeTimer += DeltaTime;
+		float Alpha = ShakeTimer / ShakeDuration;
+
+		// 時間経過で揺れが減衰
+		float CurrentIntensity = ShakeIntensity * (1.0f - Alpha);
+
+		if (CurrentIntensity <= 0.0f)
+		{
+			bIsShaking = false;
+			// 元のオフセットに戻す
+			CameraBoom->SetRelativeLocation(OriginalCameraOffset);
+			return;
+		}
+
+		// ランダム揺れ
+		float OffsetX = FMath::FRandRange(-1.f, 1.f) * CurrentIntensity;
+		float OffsetY = FMath::FRandRange(-1.f, 1.f) * CurrentIntensity;
+		float OffsetZ = FMath::FRandRange(-1.f, 1.f) * CurrentIntensity * 0.5f;
+
+		CameraBoom->SetRelativeLocation(OriginalCameraOffset + FVector(OffsetX, OffsetY, OffsetZ));
+	}
 }
 
 void AMyCharacter::NotifyControllerChanged()
@@ -107,3 +123,15 @@ void AMyCharacter::Move(const FInputActionValue& Value)
 	AddMovementInput(Forward, InputVector.Y);
 	AddMovementInput(Right, InputVector.X);
 }
+
+void AMyCharacter::StartCameraShake(float Intensity, float Duration)
+{
+	if (!CameraBoom) return;
+
+	OriginalCameraOffset = CameraBoom->GetRelativeLocation();
+	ShakeIntensity = Intensity;
+	ShakeDuration = Duration;
+	ShakeTimer = 0.f;
+	bIsShaking = true;
+}
+
