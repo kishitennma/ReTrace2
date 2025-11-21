@@ -49,6 +49,8 @@ SourceArt/**/*.tga
 # Binary Files
 Binaries/*
 Plugins/**/Binaries/*
+Contents/Inferno_World_Free/
+Contents/AncientTreasures/
 
 # Builds
 Build/*
