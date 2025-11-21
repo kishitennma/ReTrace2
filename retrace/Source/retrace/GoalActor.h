@@ -1,4 +1,3 @@
-// GoalActor.h
 #pragma once
 
 #include "CoreMinimal.h"
@@ -16,8 +15,25 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-public:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-    class UStaticMeshComponent* Mesh;
+    UFUNCTION()
+    void OnOverlapBegin(
+        UPrimitiveComponent* OverlappedComp,
+        AActor* OtherActor,
+        UPrimitiveComponent* OtherComp,
+        int32 OtherBodyIndex,
+        bool bFromSweep,
+        const FHitResult& SweepResult
+    );
 
+public:
+    UPROPERTY(VisibleAnywhere)
+    class UBoxComponent* CollisionBox;
+
+public:
+    virtual void Tick(float DeltaTime) override;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    TSubclassOf<UUserWidget> ClearWidgetClass;
+
+    bool HasActive = false;
 };

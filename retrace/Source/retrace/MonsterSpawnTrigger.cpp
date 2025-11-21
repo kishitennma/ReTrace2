@@ -51,6 +51,20 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
         SpawnedMonster->ActivateMonster(); // 既存メソッド
     }
 
+    if (GoalClass && GoalSpawnPoint)
+    {
+        FTransform GoalTransform = GoalSpawnPoint->GetActorTransform();
+
+        AGoalActor* SpawnedGoal = GetWorld()->SpawnActor<AGoalActor>(
+            GoalClass, GoalTransform
+        );
+
+        if (SpawnedGoal)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Goal Actor Spawned!"));
+        }
+    }
+
     // --- プレイヤー取得 ---
     ACharacter* PlayerChar = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
     // または OtherActor がプレイヤーなら:

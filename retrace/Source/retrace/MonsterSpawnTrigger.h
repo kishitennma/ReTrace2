@@ -3,9 +3,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "MovingMonster.h" 
+#include "GoalActor.h"
 #include "MonsterSpawnTrigger.generated.h"
 
+class AGoalActor;
+
 UCLASS()
+
 class RETRACE_API AMonsterSpawnTrigger : public AActor
 {
     GENERATED_BODY()
@@ -34,6 +38,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     AActor* SpawnPoint; // 置いたアクタの Transform を使える
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Goal")
+    TSubclassOf<AGoalActor> GoalClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Goal")
+    AActor* GoalSpawnPoint;
 
     // ---- カメラ変更設定 ----
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")

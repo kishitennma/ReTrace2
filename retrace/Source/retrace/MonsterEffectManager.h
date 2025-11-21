@@ -7,6 +7,7 @@
 
 class APostProcessVolume;
 class AMovingMonster;
+
 class ACharacter;
 
 UCLASS()
@@ -31,6 +32,8 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     TSubclassOf<AMovingMonster> MonsterClass;
+
+   
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     AActor* SpawnPoint;
