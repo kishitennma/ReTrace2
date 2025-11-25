@@ -8,7 +8,7 @@ public class retrace : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "CinematicCamera", "GameplayCameras","UMG" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "CinematicCamera", "GameplayCameras","UMG", "Niagara" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
