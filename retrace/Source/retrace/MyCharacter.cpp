@@ -74,7 +74,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		{
 			bIsShaking = false;
 			// 元のオフセットに戻す
-			CameraBoom->SetRelativeLocation(OriginalCameraOffset);
+		//	CameraBoom->SetRelativeLocation(OriginalCameraOffset);
 			return;
 		}
 
