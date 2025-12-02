@@ -10,6 +10,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class USoundBase;
 struct FInputActionValue;
 
 UCLASS()
@@ -30,49 +31,44 @@ protected:
 	void Move(const FInputActionValue& Value);
 
 public:
-	/** カメラ用スプリングアーム（追従） */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	USpringArmComponent* CameraBoom;
 
-	/** フォローカメラ */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	UCameraComponent* FollowCamera;
 
-	/** 入力マッピング */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* DefaultMappingContext;
 
-	/** 移動アクション */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
 
-	
-	//カメラの揺れ
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Custom")
-	bool bUseCustomCamera = false;
+	// ★ 足音
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* FootstepSound;
+
+	bool bIsMoving = false;
+	float FootstepTimer = 0.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	float FootstepInterval = 0.4f;  // 足音の間隔
+
+	// ★ カメラ揺れ
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
+	float ShakeIntensity = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
-	float ShakeIntensity = 20.0f;   // 揺れの強さ（位置揺れ）
+	float ShakeDuration = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
-	float ShakeDuration = 1.0f;     // 継続時間
-
-	float ShakeTimer = 0.0f;
 	bool bIsShaking = false;
+	float ShakeTimer = 0.0f;
+	FVector OriginalCameraOffset;
 
 	UFUNCTION()
 	void StartCameraShake(float Intensity, float Duration);
-
 
 private:
 	float DefaultDistance;
 	FRotator DefaultAngle;
 	FVector DefaultOffset;
-
-
-
-
-	
-	
-	FVector OriginalCameraOffset;
 };

@@ -8,13 +8,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AMyCharacter::AMyCharacter()
 {
-	// 衝突カプセル設定
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// キャラクターの回転設定
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -22,27 +21,20 @@ AMyCharacter::AMyCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0, 500, 0);
 
-	// ★ SpringArm設定
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 
-	// 親（キャラクター）の回転を一切継承しない
 	CameraBoom->bInheritPitch = false;
 	CameraBoom->bInheritYaw = false;
 	CameraBoom->bInheritRoll = false;
 
-	// 角度を絶対指定（＝ステージ奥方向固定）
 	CameraBoom->SetUsingAbsoluteRotation(true);
-	CameraBoom->SetWorldRotation(FRotator(-10.f, 0.f, 0.f)); // ←ここを基準方向に調整
+	CameraBoom->SetWorldRotation(FRotator(-10.f, 0.f, 0.f));
 
-	// 位置（高さ）をキャラから固定オフセット
 	CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, 80.f));
 	CameraBoom->TargetArmLength = 400.f;
 	CameraBoom->bDoCollisionTest = false;
 
-	
-
-	// ★ カメラ設定
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom);
 	FollowCamera->bUsePawnControlRotation = false;
@@ -52,7 +44,6 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// デフォルト値保存
 	DefaultDistance = CameraBoom->TargetArmLength;
 	DefaultAngle = CameraBoom->GetRelativeRotation();
 	DefaultOffset = CameraBoom->SocketOffset;
@@ -62,23 +53,41 @@ void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float Speed = GetVelocity().Size();
+
+	// ★ 速度で移動判定（しきい値 10 はお好みで）
+	bIsMoving = (Speed > 10.0f);
+
+	// ★ 足音処理
+	if (bIsMoving && FootstepSound)
+	{
+		FootstepTimer += DeltaTime;
+
+		if (FootstepTimer >= FootstepInterval)
+		{
+			UGameplayStatics::PlaySoundAtLocation(
+				GetWorld(),          // ← ここを this ではなく GetWorld() に修正
+				FootstepSound,
+				GetActorLocation()
+			);
+
+			FootstepTimer = 0.0f;
+		}
+	}
+
+	// ★ カメラ揺れ（元の機能）
 	if (bIsShaking && CameraBoom)
 	{
 		ShakeTimer += DeltaTime;
 		float Alpha = ShakeTimer / ShakeDuration;
 
-		// 時間経過で揺れが減衰
 		float CurrentIntensity = ShakeIntensity * (1.0f - Alpha);
-
 		if (CurrentIntensity <= 0.0f)
 		{
 			bIsShaking = false;
-			// 元のオフセットに戻す
-		//	CameraBoom->SetRelativeLocation(OriginalCameraOffset);
 			return;
 		}
 
-		// ランダム揺れ
 		float OffsetX = FMath::FRandRange(-1.f, 1.f) * CurrentIntensity;
 		float OffsetY = FMath::FRandRange(-1.f, 1.f) * CurrentIntensity;
 		float OffsetZ = FMath::FRandRange(-1.f, 1.f) * CurrentIntensity * 0.5f;
@@ -112,6 +121,10 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void AMyCharacter::Move(const FInputActionValue& Value)
 {
 	FVector2D InputVector = Value.Get<FVector2D>();
+
+	// ★ 移動しているか判定（足音に使用）
+	
+
 	if (Controller == nullptr) return;
 
 	const FRotator ControlRot = Controller->GetControlRotation();
@@ -134,4 +147,3 @@ void AMyCharacter::StartCameraShake(float Intensity, float Duration)
 	ShakeTimer = 0.f;
 	bIsShaking = true;
 }
-
