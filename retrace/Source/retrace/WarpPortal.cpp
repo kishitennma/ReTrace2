@@ -2,6 +2,7 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "NiagaraFunctionLibrary.h"
+#include "MyCharacter.h"
 #include "TimerManager.h"
 
 AWarpPortal::AWarpPortal()
@@ -59,7 +60,8 @@ void AWarpPortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
 {
     if (!bCanTeleport || !TargetPortal) return;
 
-    ACharacter* Player = Cast<ACharacter>(OtherActor);
+    // ★ MyCharacter 以外は無視
+    AMyCharacter* Player = Cast<AMyCharacter>(OtherActor);
     if (!Player) return;
 
     bCanTeleport = false;
@@ -71,7 +73,16 @@ void AWarpPortal::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Ot
     Player->SetActorLocation(NewLocation);
     Player->SetActorRotation(NewRotation);
 
-    FTimerHandle TimerHandle;
-    GetWorldTimerManager().SetTimer(TimerHandle, [this]() { bCanTeleport = true; }, 1.0f, false);
-    GetWorldTimerManager().SetTimer(TimerHandle, [Target = TargetPortal]() { Target->bCanTeleport = true; }, 1.0f, false);
+    // テレポート拘束解除
+    FTimerHandle TimerHandle1;
+    GetWorldTimerManager().SetTimer(TimerHandle1, [this]()
+        {
+            bCanTeleport = true;
+        }, 1.0f, false);
+
+    FTimerHandle TimerHandle2;
+    GetWorldTimerManager().SetTimer(TimerHandle2, [Target = TargetPortal]()
+        {
+            Target->bCanTeleport = true;
+        }, 1.0f, false);
 }
