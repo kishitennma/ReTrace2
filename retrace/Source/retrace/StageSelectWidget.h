@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "StageSelectWidget.generated.h"
 
+class UButton;
+
 UCLASS()
 class RETRACE_API UStageSelectWidget : public UUserWidget
 {
@@ -16,4 +18,16 @@ public:
     // ブループリントから呼べる関数
     UFUNCTION(BlueprintCallable)
     void LoadStage(FName StageName);
+
+    void NativeConstruct() override;
+private:
+   
+  /*  UPROPERTY(meta = (BindWidget))
+    class UButton* Stage1;
+    UPROPERTY(meta = (BindWidget))
+    class UButton* Stage2;
+    UPROPERTY(meta = (BindWidget))
+    class UButton* Stage3;
+    UPROPERTY(meta = (BindWidget))
+    class UButton* Title;*/
 };
