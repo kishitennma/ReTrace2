@@ -3,6 +3,7 @@
 #include "GameFramework/Character.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "MyCharacter.h"
 
 
 AGoalActor::AGoalActor()
@@ -41,6 +42,8 @@ void AGoalActor::OnOverlapBegin(
     if (!Cast<ACharacter>(OtherActor)) return;
     if (HasActive) return;
 
+    AMyCharacter* Player = Cast<AMyCharacter>(OtherActor);
+    if (!Player) return;
 
     if (ClearWidgetClass)
     {
