@@ -6,6 +6,6 @@
 
 AStageSelectGameModeBase::AStageSelectGameModeBase()
 {
-	HUDClass = AStageSelectHUD::StaticClass();
+	
 }
 

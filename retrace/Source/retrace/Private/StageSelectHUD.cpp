@@ -11,7 +11,7 @@ void AStageSelectHUD::BeginPlay()
 	Super::BeginPlay();
 	// WidgetBlueprint‚ÌClass‚ðŽæ“¾‚·‚é
 	FString Path = TEXT("/Game/BPW_StageSelectWidget.BPW_StageSelectWidget_C");
-	TSubclassOf<UUserWidget> WidgetClass = TSoftClassPtr<UUserWidget>(FSoftObjectPath(*Path)).LoadSynchronous();
+	WidgetClass = TSoftClassPtr<UUserWidget>(FSoftObjectPath(*Path)).LoadSynchronous();
 
 	// PlayerController‚ðŽæ“¾‚·‚é
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);

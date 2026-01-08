@@ -11,4 +11,6 @@ class RETRACE_API AStageSelectHUD : public AHUD
 
 protected:
     virtual void BeginPlay() override;
+    UPROPERTY(EditAnywhere, category = "UI")
+    TSubclassOf<UUserWidget> WidgetClass;
 };

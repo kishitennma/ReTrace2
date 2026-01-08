@@ -6,5 +6,5 @@
 
 AMainMenuGameMode::AMainMenuGameMode()
 {
-	HUDClass = AMainMenuHUD::StaticClass();
+	
 }
