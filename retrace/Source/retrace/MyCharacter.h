@@ -1,10 +1,11 @@
-﻿// MyCharacter.h
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Animation/AnimMontage.h"
 #include "MyCharacter.generated.h"
+
+
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -42,6 +43,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
+
+	
+
+	UFUNCTION()
+	void PlayKnockDown();
+
+
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimMontage* KnockDownMontage;
+
+	bool bIsKnockedDown = false;
 
 	// ★ 足音
 	UPROPERTY(EditAnywhere, Category = "Sound")
