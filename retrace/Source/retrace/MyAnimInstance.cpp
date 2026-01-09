@@ -36,3 +36,6 @@ void UMyAnimInstance::UpdateAnimationProperties(float DeltaTime)
 	}
 }
 
+
+
+

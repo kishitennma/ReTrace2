@@ -2,6 +2,7 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
+#include "MyCharacter.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -36,11 +37,6 @@ void AMovingMonster::Tick(float DeltaTime)
         SetActorLocation(NewLocation, false); 
     }
 
-  
-
-  
-
-    
 }
 
 void AMovingMonster::ActivateMonster()
@@ -57,14 +53,21 @@ void AMovingMonster::OnOverlapBegin(
     const FHitResult& SweepResult
 )
 {
+
+
+    AMyCharacter* Player = Cast<AMyCharacter>(OtherActor);
+    if (Player)
+    {
+        Player->PlayKnockDown();
+    }
     if (OtherActor && OtherActor != this)
     {
         if (OtherActor->IsA(ACharacter::StaticClass()))
         {
-            UGameplayStatics::OpenLevel(
+           /* UGameplayStatics::OpenLevel(
                 this,
                 FName(*GetWorld()->GetName())
-            );
+            );*/
         }
     }
 }

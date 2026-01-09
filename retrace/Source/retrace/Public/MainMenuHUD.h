@@ -16,5 +16,10 @@ class RETRACE_API AMainMenuHUD : public AHUD
 
 protected:
 	virtual void BeginPlay() override;
-	
+	UPROPERTY()
+	UUserWidget* UserWidget;
+	UPROPERTY()
+	APlayerController* PlayerController;
+	UPROPERTY(EditAnywhere, category = "UI")
+	TSubclassOf<UUserWidget> WidgetClass;
 };

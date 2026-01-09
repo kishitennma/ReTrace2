@@ -147,3 +147,28 @@ void AMyCharacter::StartCameraShake(float Intensity, float Duration)
 	ShakeTimer = 0.f;
 	bIsShaking = true;
 }
+
+void AMyCharacter::PlayKnockDown()
+{
+	if (!KnockDownMontage) return;
+
+	// ‚·‚Å‚É“|‚ê‚Ä‚½‚çÄ¶‚µ‚È‚¢
+	if (GetCharacterMovement()->IsFalling() == false &&
+		GetCharacterMovement()->MovementMode == MOVE_None)
+	{
+		return;
+	}
+
+	// ˆÚ“®’âŽ~
+	GetCharacterMovement()->DisableMovement();
+
+	// Œü‚«ŒÅ’èi”CˆÓj
+	bUseControllerRotationYaw = false;
+
+	// ƒ‚ƒ“ƒ^[ƒWƒ…Ä¶
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->Montage_Play(KnockDownMontage);
+	}
+}
+

@@ -17,8 +17,11 @@ ASpeedPadActor::ASpeedPadActor()
     Mesh->OnComponentBeginOverlap.AddDynamic(this, &ASpeedPadActor::OnOverlapBegin);
     Mesh->OnComponentEndOverlap.AddDynamic(this, &ASpeedPadActor::OnOverlapEnd);
 
+    DirectionRoot = CreateDefaultSubobject<USceneComponent>(TEXT("DirectionRoot"));
+    DirectionRoot->SetupAttachment(Mesh);
+
     DirectionArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("DirectionArrow"));
-    DirectionArrow->SetupAttachment(Mesh);
+    DirectionArrow->SetupAttachment(DirectionRoot);
     DirectionArrow->ArrowSize = 2.f;
     DirectionArrow->bIsEditorOnly = true;
 }
@@ -34,7 +37,7 @@ void ASpeedPadActor::Tick(float DeltaTime)
 
     if (!OverlappingPlayer) return;
 
-    FVector FloorDir = DirectionArrow->GetForwardVector().GetSafeNormal();
+    FVector FloorDir = DirectionRoot->GetForwardVector().GetSafeNormal();
     FVector PlayerInput = OverlappingPlayer->GetLastMovementInputVector();
 
     FVector CurrentVel = OverlappingPlayer->GetVelocity();

@@ -33,6 +33,9 @@ public:
     UPROPERTY(VisibleAnywhere)
     UStaticMeshComponent* Mesh;
 
+    UPROPERTY(VisibleAnywhere)
+    USceneComponent* DirectionRoot;
+
     // 加速方向アロー
     UPROPERTY(VisibleAnywhere)
     class UArrowComponent* DirectionArrow;
