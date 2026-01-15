@@ -48,9 +48,26 @@ void AMyCharacter::BeginPlay()
 	DefaultAngle = CameraBoom->GetRelativeRotation();
 	DefaultOffset = CameraBoom->SocketOffset;
 
-	
 
+	// MonsterEffectManager ‚ðŽæ“¾
+	MonsterEffectManager = Cast<AMonsterEffectManager>(
+		UGameplayStatics::GetActorOfClass(
+			GetWorld(),
+			AMonsterEffectManager::StaticClass()
+		)
+	);
+
+	if (MonsterEffectManager)
+	{
+		MonsterEffectManager->OnDeathFadeFinishedEvent.AddDynamic(
+			this,
+			&AMyCharacter::OnDeathFadeFinished
+		);
+	}
 }
+
+
+
 
 void AMyCharacter::Tick(float DeltaTime)
 {
@@ -188,6 +205,34 @@ void AMyCharacter::PlayKnockDown()
 		AnimInstance->Montage_Play(KnockDownMontage);
 	}
 }
+
+void AMyCharacter::OnDeathFadeFinished()
+{
+	//UE_LOG(LogTemp, Warning, TEXT("MyCharacter received death fade"));
+
+	//if (!DeathWidgetClass) return;
+
+	//if (!DeathWidget)
+	//{DeathD
+	//	DeathWidget = CreateWidget<UUserWidget>(
+	//		GetWorld(),
+	//		DeathWidgetClass
+	//	);
+	//}
+
+	//if (DeathWidget)
+	//{
+	//	DeathWidget->AddToViewport();
+
+	//	// “ü—Í‚ðUI‚É
+	//	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	//	{
+	//		PC->SetInputMode(FInputModeUIOnly());
+	//		PC->bShowMouseCursor = true;
+	//	}
+	//}
+}
+
 
 
 
