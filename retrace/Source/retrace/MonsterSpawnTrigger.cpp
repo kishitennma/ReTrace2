@@ -88,17 +88,13 @@ void AMonsterSpawnTrigger::OnOverlapBegin(
     }
     if (AMyCharacter* Player = Cast<AMyCharacter>(OtherActor))
     {
-        // --- カメラをワールド回転モードにする ---
-        Player->CameraBoom->SetUsingAbsoluteRotation(true);
+       
+      
+        Player->ApplyDeathCamera(
+            NewCameraRotation,
+            NewCameraDistance,
+            NewCameraOffset);
 
-        // ステージの固定方向を向かせる（たとえば少し俯瞰）
-        Player->CameraBoom->SetWorldRotation(NewCameraRotation);
-
-        // カメラ距離（ズーム距離）
-        Player->CameraBoom->TargetArmLength = NewCameraDistance;
-
-        // キャラ位置に対して固定オフセット（ローカル相対位置）
-        Player->CameraBoom->SetRelativeLocation(NewCameraOffset);
 
         UE_LOG(LogTemp, Warning, TEXT("BP値確認: Offset=%s, Rotation=%s, Distance=%f"),
             *NewCameraOffset.ToString(),

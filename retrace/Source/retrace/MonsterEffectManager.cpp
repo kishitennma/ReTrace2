@@ -36,8 +36,14 @@ void AMonsterEffectManager::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    if (bIsDying)
+    {
+        UpdateDeathFade(DeltaTime);
+        return; // ← 距離演出を止める
+    }
+
     // 毎フレーム距離をチェック！
-    if (PlayerRef && MonsterRef)
+    if (PlayerRef && MonsterRef && !bIsDying)
     {
         UpdateEffect(PlayerRef, MonsterRef);
     }
@@ -59,4 +65,39 @@ void AMonsterEffectManager::UpdateEffect(ACharacter* Player, AActor* Monster)
     Settings.SceneColorTint = FLinearColor(1.f, 1.f - 0.6f * Intensity, 1.f - 0.6f * Intensity);
 }
 
+void AMonsterEffectManager::StartDeathFade()
+{
+    bIsDying = true;
+    DeathFadeAlpha = 0.0f;
+}
+
+void AMonsterEffectManager::UpdateDeathFade(float DeltaTime)
+{
+    if (bIsDying && PostProcessVolume)
+    {
+        DeathFadeAlpha += DeltaTime / DeathFadeDuration;
+
+        float Fade = FMath::Clamp(DeathFadeAlpha, 0.f, 1.f);
+
+        PostProcessVolume->Settings.bOverride_SceneColorTint = true;
+        PostProcessVolume->Settings.SceneColorTint =
+            FMath::Lerp(FLinearColor::White, FLinearColor::Black, Fade);
+
+
+        // ★ 完了判定
+        if (DeathFadeAlpha >= 1.0f)
+        {
+            DeathFadeAlpha = 1.0f;
+          
+            OnDeathFadeFinished();   
+        }
+    }
+
+}
+
+void AMonsterEffectManager::OnDeathFadeFinished()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Death Fade Finished"));
+    OnDeathFadeFinishedEvent.Broadcast(); 
+}
 

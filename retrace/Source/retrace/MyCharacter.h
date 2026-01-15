@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Animation/AnimMontage.h"
+#include "MonsterEffectManager.h"
 #include "MyCharacter.generated.h"
 
 
@@ -28,6 +29,8 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void NotifyControllerChanged() override;
 
+	UFUNCTION()
+	void OnDeathFadeFinished();
 	// 移動アクション
 	void Move(const FInputActionValue& Value);
 
@@ -43,6 +46,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyDeathCamera(
+		FRotator CameraRotation,
+		float CameraDistance,
+		FVector CameraOffset
+	);
+
+
 
 	
 
@@ -78,6 +90,9 @@ public:
 
 	UFUNCTION()
 	void StartCameraShake(float Intensity, float Duration);
+
+	UPROPERTY()
+	AMonsterEffectManager* MonsterEffectManager;
 
 private:
 	float DefaultDistance;

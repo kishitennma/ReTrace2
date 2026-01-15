@@ -47,6 +47,9 @@ void AMyCharacter::BeginPlay()
 	DefaultDistance = CameraBoom->TargetArmLength;
 	DefaultAngle = CameraBoom->GetRelativeRotation();
 	DefaultOffset = CameraBoom->SocketOffset;
+
+	
+
 }
 
 void AMyCharacter::Tick(float DeltaTime)
@@ -161,6 +164,20 @@ void AMyCharacter::PlayKnockDown()
 
 	// ˆÚ“®’âŽ~
 	GetCharacterMovement()->DisableMovement();
+	MonsterEffectManager = Cast<AMonsterEffectManager>(
+		UGameplayStatics::GetActorOfClass(
+			GetWorld(),
+			AMonsterEffectManager::StaticClass()));
+
+	if (MonsterEffectManager)
+	{
+		MonsterEffectManager->StartDeathFade();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("MonsterEffectManager is NULL"));
+	}
+	;
 
 	// Œü‚«ŒÅ’èi”CˆÓj
 	bUseControllerRotationYaw = false;
@@ -171,4 +188,21 @@ void AMyCharacter::PlayKnockDown()
 		AnimInstance->Montage_Play(KnockDownMontage);
 	}
 }
+
+
+
+void AMyCharacter::ApplyDeathCamera(
+	FRotator CameraRotation,
+	float CameraDistance,
+	FVector CameraOffset
+)
+{
+	if (!CameraBoom) return;
+
+	CameraBoom->SetUsingAbsoluteRotation(true);
+	CameraBoom->SetWorldRotation(CameraRotation);
+	CameraBoom->TargetArmLength = CameraDistance;
+	CameraBoom->SetRelativeLocation(CameraOffset);
+}
+
 
