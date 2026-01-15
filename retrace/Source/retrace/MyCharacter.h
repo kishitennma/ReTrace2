@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Animation/AnimMontage.h"
+#include "MonsterEffectManager.h"
 #include "MyCharacter.generated.h"
 
 
@@ -53,6 +54,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* KnockDownMontage;
 
+	
+
 	bool bIsKnockedDown = false;
 
 	// ★ 足音
@@ -65,6 +68,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	float FootstepInterval = 0.4f;  // 足音の間隔
 
+	AMonsterEffectManager* MonsterEffectManger;
+
 	// ★ カメラ揺れ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
 	float ShakeIntensity = 20.0f;
@@ -72,12 +77,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
 	float ShakeDuration = 1.0f;
 
+
+
 	bool bIsShaking = false;
 	float ShakeTimer = 0.0f;
 	FVector OriginalCameraOffset;
 
 	UFUNCTION()
 	void StartCameraShake(float Intensity, float Duration);
+
+	UFUNCTION()
+	void ApplyDeathCamera(FRotator CameraRotation, float CameraDistance, FVector CameraOffset);
 
 private:
 	float DefaultDistance;
