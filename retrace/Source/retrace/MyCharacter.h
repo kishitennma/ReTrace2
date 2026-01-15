@@ -29,6 +29,8 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void NotifyControllerChanged() override;
 
+	UFUNCTION()
+	void OnDeathFadeFinished();
 	// 移動アクション
 	void Move(const FInputActionValue& Value);
 
@@ -45,6 +47,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
 
+	UFUNCTION(BlueprintCallable)
+	void ApplyDeathCamera(
+		FRotator CameraRotation,
+		float CameraDistance,
+		FVector CameraOffset
+	);
+
+
+
 	
 
 	UFUNCTION()
@@ -53,8 +64,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
 	UAnimMontage* KnockDownMontage;
-
-	
 
 	bool bIsKnockedDown = false;
 
@@ -68,16 +77,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	float FootstepInterval = 0.4f;  // 足音の間隔
 
-	AMonsterEffectManager* MonsterEffectManger;
-
 	// ★ カメラ揺れ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
 	float ShakeIntensity = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake")
 	float ShakeDuration = 1.0f;
-
-
 
 	bool bIsShaking = false;
 	float ShakeTimer = 0.0f;
@@ -86,8 +91,8 @@ public:
 	UFUNCTION()
 	void StartCameraShake(float Intensity, float Duration);
 
-	UFUNCTION()
-	void ApplyDeathCamera(FRotator CameraRotation, float CameraDistance, FVector CameraOffset);
+	UPROPERTY()
+	AMonsterEffectManager* MonsterEffectManager;
 
 private:
 	float DefaultDistance;

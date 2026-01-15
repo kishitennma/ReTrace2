@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Camera/CameraComponent.h"
+#include "Delegates/DelegateCombinations.h"
 #include "MonsterEffectManager.generated.h"
 
 class APostProcessVolume;
@@ -21,6 +22,12 @@ public:
     // 呼ばれたときにエフェクトを更新
     void UpdateEffect(ACharacter* Player, AActor* Monster);
 
+    void OnDeathFadeFinished();
+
+public:
+    void StartDeathFade();
+    void UpdateDeathFade(float DeltaTime);
+
     UPROPERTY()
     ACharacter* PlayerRef;
 
@@ -33,12 +40,20 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     TSubclassOf<AMovingMonster> MonsterClass;
 
-   
+    UPROPERTY(EditAnywhere, Category = "Death Fade")
+    float DeathFadeSpeed = 0.5f; // 小さいほどゆっくり
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
     AActor* SpawnPoint;
 
-    
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathFadeFinished);
+
+    UPROPERTY(BlueprintAssignable)
+    FOnDeathFadeFinished OnDeathFadeFinishedEvent;
+
+    // フェード完了までの時間（秒）
+    UPROPERTY(EditAnywhere, Category = "Death")
+    float DeathFadeDuration = 1.3f;
 
 protected:
     virtual void BeginPlay() override;
@@ -52,4 +67,12 @@ private:
 
     // カメラ揺れの最大幅
     float ShakeAmount;
+
+    // フェード用
+    bool bIsDying = false;
+
+    float DeathFadeAlpha = 0.0f;
+
+    
+
 };
