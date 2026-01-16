@@ -9,6 +9,8 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Blueprint/UserWidget.h"
 
 AMyCharacter::AMyCharacter()
 {
@@ -208,29 +210,33 @@ void AMyCharacter::PlayKnockDown()
 
 void AMyCharacter::OnDeathFadeFinished()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("MyCharacter received death fade"));
+	UE_LOG(LogTemp, Warning, TEXT("MyCharacter received death fade"));
 
-	//if (!DeathWidgetClass) return;
+	if (!DeathWidgetClass) return;
 
-	//if (!DeathWidget)
-	//{DeathD
-	//	DeathWidget = CreateWidget<UUserWidget>(
-	//		GetWorld(),
-	//		DeathWidgetClass
-	//	);
-	//}
+	if (!DeathWidget)
+	{
+		DeathWidget = CreateWidget<UUserWidget>(
+			GetWorld(),
+			DeathWidgetClass
+		);
+	}
 
-	//if (DeathWidget)
-	//{
-	//	DeathWidget->AddToViewport();
+	
+		if (DeathWidget && !DeathWidget->IsInViewport())
+		{
+			DeathWidget->AddToViewport();
 
-	//	// “ü—Í‚ðUI‚É
-	//	if (APlayerController* PC = Cast<APlayerController>(GetController()))
-	//	{
-	//		PC->SetInputMode(FInputModeUIOnly());
-	//		PC->bShowMouseCursor = true;
-	//	}
-	//}
+			// “ü—Í‚ðUI‚É
+			if (APlayerController* PC = Cast<APlayerController>(GetController()))
+			{
+				PC->SetInputMode(FInputModeUIOnly());
+				PC->bShowMouseCursor = true;
+			}
+		}
+
+		
+	
 }
 
 

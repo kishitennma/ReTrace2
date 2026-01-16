@@ -53,7 +53,12 @@ public:
 		float CameraDistance,
 		FVector CameraOffset
 	);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> DeathWidgetClass;
 
+	// ▼ 実際に生成されるウィジットのインスタンス
+	UPROPERTY()
+	UUserWidget* DeathWidget;
 
 
 	
