@@ -34,6 +34,10 @@ public:
     UPROPERTY()
     AActor* MonsterRef;
 
+
+    UFUNCTION(BlueprintCallable)
+    void ResetDeathState();
+
     UFUNCTION(BlueprintCallable)
     void SetTargets(ACharacter* Player, AActor* Monster);
 

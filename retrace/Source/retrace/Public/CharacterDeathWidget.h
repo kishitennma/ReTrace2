@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "retrace/MyCharacter.h"
 #include "CharacterDeathWidget.generated.h"
 
 

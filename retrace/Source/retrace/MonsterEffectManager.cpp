@@ -101,3 +101,21 @@ void AMonsterEffectManager::OnDeathFadeFinished()
     OnDeathFadeFinishedEvent.Broadcast(); 
 }
 
+void AMonsterEffectManager::ResetDeathState()
+{
+    bIsDying = false;
+    DeathFadeAlpha = 0.0f;
+
+    if (PostProcessVolume)
+    {
+        FPostProcessSettings& Settings = PostProcessVolume->Settings;
+
+        Settings.bOverride_SceneColorTint = false;
+        Settings.bOverride_VignetteIntensity = false;
+
+        Settings.SceneColorTint = FLinearColor::White;
+        Settings.VignetteIntensity = 0.3f; // 通常値に戻す
+    }
+}
+
+

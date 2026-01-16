@@ -61,7 +61,8 @@ public:
 	UUserWidget* DeathWidget;
 
 
-	
+	UFUNCTION()
+	void Retry();
 
 	UFUNCTION()
 	void PlayKnockDown();

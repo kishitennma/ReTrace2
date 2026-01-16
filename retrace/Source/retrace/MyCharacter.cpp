@@ -239,6 +239,30 @@ void AMyCharacter::OnDeathFadeFinished()
 	
 }
 
+void AMyCharacter::Retry()
+{
+	
+	if (MonsterEffectManager)
+	{
+		MonsterEffectManager->ResetDeathState();
+	}
+
+	
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+
+	
+	if (DeathWidget)
+	{
+		DeathWidget->RemoveFromParent();
+	}
+
+
+	UGameplayStatics::OpenLevel(
+		this,
+		FName(*UGameplayStatics::GetCurrentLevelName(this))
+	);
+}
+
 
 
 

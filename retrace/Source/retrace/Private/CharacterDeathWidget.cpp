@@ -18,9 +18,10 @@ void UCharacterDeathWidget::NativeConstruct()
 
 void UCharacterDeathWidget:: OnButtonRetry()
 {
-    UGameplayStatics::OpenLevel(
-        this,
-        FName(*GetWorld()->GetName()));
+    if (AMyCharacter* Player = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
+    {
+        Player->Retry();
+    }
 }
 
 void UCharacterDeathWidget::OnButtonStageSelect()
