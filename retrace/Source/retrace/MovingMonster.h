@@ -31,7 +31,11 @@ public:
         bool bFromSweep,
         const FHitResult& SweepResult
     );
+    UPROPERTY(EditAnywhere, Category = "Animation")
+    UAnimMontage* DeathMontage;
 
+    void PlayDeath();
+    void OnDeathAnimationFinished();
 
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")

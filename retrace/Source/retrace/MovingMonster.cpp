@@ -72,5 +72,21 @@ void AMovingMonster::OnOverlapBegin(
     }
 }
 
+void AMovingMonster::PlayDeath()
+{
+    // ˆÚ“®’âŽ~
+    GetCharacterMovement()->DisableMovement();
 
+    if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+    {
+        AnimInstance->Montage_Play(DeathMontage);
+    }
+}
+
+void AMovingMonster::OnDeathAnimationFinished()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Monster Death Animation Finished"));
+
+  
+}
 

@@ -6,9 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "MyAnimInstance.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class RETRACE_API UMyAnimInstance : public UAnimInstance
 {
