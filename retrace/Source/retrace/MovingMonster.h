@@ -22,6 +22,9 @@ public:
     UFUNCTION(BlueprintCallable)
     void ActivateMonster();
 
+    UFUNCTION(BlueprintCallable)//プレイヤーがゴールしたら
+    void OnGoalReached();
+
     UFUNCTION()
     void OnOverlapBegin(
         UPrimitiveComponent* OverlappedComp,
@@ -32,7 +35,9 @@ public:
         const FHitResult& SweepResult
     );
     UPROPERTY(EditAnywhere, Category = "Animation")
-    UAnimMontage* DeathMontage;
+    UAnimMontage* DeathStartMontage;
+    UPROPERTY(EditAnywhere, Category = "Animation")
+    UAnimMontage* DeathLooptMontage;
 
     void PlayDeath();
     void OnDeathAnimationFinished();
@@ -48,6 +53,8 @@ public:
     // 移動中フラグ
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster")
     bool bIsActive = false;
+    UPROPERTY(BlueprintReadWrite, Category = "State")
+    bool bIsDead = false;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
     class UBoxComponent* HitCollision;

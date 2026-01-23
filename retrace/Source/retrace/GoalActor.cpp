@@ -3,6 +3,7 @@
 #include "GameFramework/Character.h"
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "MovingMonster.h"
 #include "MyCharacter.h"
 
 
@@ -39,21 +40,21 @@ void AGoalActor::OnOverlapBegin(
     const FHitResult& SweepResult
 )
 {
-    if (!Cast<ACharacter>(OtherActor)) return;
+    AMyCharacter* Player = Cast<AMyCharacter>(OtherActor);
+    if (!Player) return; 
     if (HasActive) return;
 
-    AMyCharacter* Player = Cast<AMyCharacter>(OtherActor);
-    if (!Player) return;
+    AMovingMonster* Monster =
+        Cast<AMovingMonster>(
+            UGameplayStatics::GetActorOfClass(
+                GetWorld(),
+                AMovingMonster::StaticClass()
+            )
+        );
 
-    if (ClearWidgetClass)
-    {
-        UUserWidget* ClearWidget = CreateWidget<UUserWidget>(GetWorld(), ClearWidgetClass);
-        if (ClearWidget)
-        {
-            ClearWidget->AddToViewport();
-            HasActive = true;
-           
+    if (!Monster) return;
 
-        }
-    }
+    Monster->OnGoalReached();
+   
+  
 }

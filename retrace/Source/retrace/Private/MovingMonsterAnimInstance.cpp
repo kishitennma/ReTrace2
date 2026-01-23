@@ -12,6 +12,11 @@ void UMovingMonsterAnimInstance::NativeInitializeAnimation()
         &UMovingMonsterAnimInstance::HandleMontageEnded
     );
 
+    if (Monster)
+    {
+        bIsDead = Monster->bIsDead; // Monsterのフラグをコピー
+    }
+
     Montage_SetEndDelegate(MontageEndDelegate);
 }
 

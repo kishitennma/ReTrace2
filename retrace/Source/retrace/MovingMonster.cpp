@@ -37,6 +37,12 @@ void AMovingMonster::Tick(float DeltaTime)
         SetActorLocation(NewLocation, false); 
     }
 
+    if (!bIsActive || bIsDead) return;
+
+    FVector NewLocation =
+        GetActorLocation() + GetActorForwardVector() * MoveSpeed * DeltaTime;
+    SetActorLocation(NewLocation, false);
+
 }
 
 void AMovingMonster::ActivateMonster()
@@ -60,26 +66,27 @@ void AMovingMonster::OnOverlapBegin(
     {
         Player->PlayKnockDown();
     }
-    if (OtherActor && OtherActor != this)
-    {
-        if (OtherActor->IsA(ACharacter::StaticClass()))
-        {
-           /* UGameplayStatics::OpenLevel(
-                this,
-                FName(*GetWorld()->GetName())
-            );*/
-        }
-    }
+   
 }
+
+void AMovingMonster::OnGoalReached()
+{
+
+    PlayDeath();
+}
+
 
 void AMovingMonster::PlayDeath()
 {
-    // ˆÚ“®’âŽ~
+    bIsDead = true;
+    bIsActive = false;
+
+    GetCharacterMovement()->StopMovementImmediately();
     GetCharacterMovement()->DisableMovement();
 
     if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
     {
-        AnimInstance->Montage_Play(DeathMontage);
+        AnimInstance->Montage_Play(DeathStartMontage);
     }
 }
 
@@ -87,6 +94,9 @@ void AMovingMonster::OnDeathAnimationFinished()
 {
     UE_LOG(LogTemp, Warning, TEXT("Monster Death Animation Finished"));
 
-  
+    if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+    {
+        AnimInstance->Montage_Play(DeathLooptMontage);
+    }
 }
 

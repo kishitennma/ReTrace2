@@ -17,6 +17,9 @@ public:
     UFUNCTION()
     void HandleMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+    UPROPERTY(BlueprintReadWrite, Category = "Animation")
+    bool bIsDead;
+
 private:
     AMovingMonster* Monster = nullptr;
 

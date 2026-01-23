@@ -2,7 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/BoxComponent.h"
 #include "GoalActor.generated.h"
+
+
 
 UCLASS()
 class RETRACE_API AGoalActor : public AActor
@@ -29,11 +32,11 @@ public:
     UPROPERTY(VisibleAnywhere)
     class UBoxComponent* CollisionBox;
 
-public:
-    virtual void Tick(float DeltaTime) override;
+   
+   virtual void Tick(float DeltaTime) override;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-    TSubclassOf<UUserWidget> ClearWidgetClass;
+   
+
 
     bool HasActive = false;
 };
