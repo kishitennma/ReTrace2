@@ -31,19 +31,13 @@ void AMovingMonster::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (bIsActive)
-    {
-        FVector NewLocation = GetActorLocation() + GetActorForwardVector() * MoveSpeed * DeltaTime;
-        SetActorLocation(NewLocation, false); 
-    }
-
     if (!bIsActive || bIsDead) return;
 
     FVector NewLocation =
         GetActorLocation() + GetActorForwardVector() * MoveSpeed * DeltaTime;
     SetActorLocation(NewLocation, false);
-
 }
+
 
 void AMovingMonster::ActivateMonster()
 {
@@ -78,25 +72,42 @@ void AMovingMonster::OnGoalReached()
 
 void AMovingMonster::PlayDeath()
 {
+    if (bIsDead) return;
     bIsDead = true;
     bIsActive = false;
 
+    // ˆÚ“®Š®‘S’âŽ~
     GetCharacterMovement()->StopMovementImmediately();
     GetCharacterMovement()->DisableMovement();
 
-    if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+    // AnimBP ‚ªŽQÆ‚µ‚Ä‚¢‚é’l‚ðƒ[ƒ‚É‚·‚é
+    GetCharacterMovement()->Velocity = FVector::ZeroVector;
+
+    if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
     {
-        AnimInstance->Montage_Play(DeathStartMontage);
+        Anim->Montage_Play(DeathMontage);
     }
+
+    AMyCharacter* Player = Cast<AMyCharacter>(
+        UGameplayStatics::GetActorOfClass(
+            GetWorld(),
+            AMyCharacter::StaticClass()
+        )
+    );
+    if (!Player) return;
+    if(Player)
+    Player->PlayClearWhidget();
 }
 
-void AMovingMonster::OnDeathAnimationFinished()
-{
-    UE_LOG(LogTemp, Warning, TEXT("Monster Death Animation Finished"));
 
-    if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
-    {
-        AnimInstance->Montage_Play(DeathLooptMontage);
-    }
-}
+
+//void AMovingMonster::OnDeathAnimationFinished()
+//{
+//    UE_LOG(LogTemp, Warning, TEXT("Monster Death Animation Finished"));
+//
+//    if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+//    {
+//        AnimInstance->Montage_Play(DeathLooptMontage);
+//    }
+//}
 

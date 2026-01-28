@@ -14,8 +14,7 @@ class RETRACE_API UMovingMonsterAnimInstance : public UAnimInstance
 public:
     virtual void NativeInitializeAnimation() override;
 
-    UFUNCTION()
-    void HandleMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+   
 
     UPROPERTY(BlueprintReadWrite, Category = "Animation")
     bool bIsDead;

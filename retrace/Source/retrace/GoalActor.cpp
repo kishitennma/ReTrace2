@@ -55,6 +55,8 @@ void AGoalActor::OnOverlapBegin(
     if (!Monster) return;
 
     Monster->OnGoalReached();
-   
+  
+    UE_LOG(LogTemp, Warning, TEXT("Goal Overlap with: %s"), *OtherActor->GetName());
+
   
 }

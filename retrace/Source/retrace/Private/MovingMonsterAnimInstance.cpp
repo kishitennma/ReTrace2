@@ -7,10 +7,7 @@ void UMovingMonsterAnimInstance::NativeInitializeAnimation()
 
     Monster = Cast<AMovingMonster>(TryGetPawnOwner());
 
-    MontageEndDelegate.BindUObject(
-        this,
-        &UMovingMonsterAnimInstance::HandleMontageEnded
-    );
+    
 
     if (Monster)
     {
@@ -21,12 +18,3 @@ void UMovingMonsterAnimInstance::NativeInitializeAnimation()
 }
 
 
-void UMovingMonsterAnimInstance::HandleMontageEnded(
-    UAnimMontage* Montage,
-    bool bInterrupted
-)
-{
-    if (!Monster || bInterrupted) return;
-
-    Monster->OnDeathAnimationFinished();
-}

@@ -241,27 +241,67 @@ void AMyCharacter::OnDeathFadeFinished()
 
 void AMyCharacter::Retry()
 {
-	
 	if (MonsterEffectManager)
 	{
 		MonsterEffectManager->ResetDeathState();
 	}
 
-	
+	// 入力モードを戻す
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		PC->SetInputMode(FInputModeGameOnly());
+		PC->bShowMouseCursor = false;
+
+		// EnhancedInput 再登録
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			Subsystem->ClearAllMappings();
+			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+		}
+	}
+
+	// 移動復活
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 
-	
 	if (DeathWidget)
 	{
 		DeathWidget->RemoveFromParent();
 	}
 
-
+	// レベルリロード
 	UGameplayStatics::OpenLevel(
 		this,
 		FName(*UGameplayStatics::GetCurrentLevelName(this))
 	);
 }
+
+void AMyCharacter::PlayClearWhidget()
+{
+	if (!ClearWidgetClass) return;
+
+	if (!ClearWidget)
+	{
+		ClearWidget = CreateWidget<UUserWidget>(
+			GetWorld(),
+			ClearWidgetClass
+		);
+	}
+
+
+	if (ClearWidget && !ClearWidget->IsInViewport())
+	{
+		ClearWidget->AddToViewport();
+
+		// 入力をUIに
+		if (APlayerController* PC = Cast<APlayerController>(GetController()))
+		{
+			PC->SetInputMode(FInputModeUIOnly());
+			PC->bShowMouseCursor = true;
+		}
+	}
+}
+
 
 
 

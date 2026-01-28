@@ -55,10 +55,14 @@ public:
 	);
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
 	TSubclassOf<UUserWidget> DeathWidgetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UUserWidget> ClearWidgetClass;
 
 	// ▼ 実際に生成されるウィジットのインスタンス
 	UPROPERTY()
 	UUserWidget* DeathWidget;
+	UPROPERTY()
+	UUserWidget* ClearWidget;
 
 
 	UFUNCTION()
@@ -66,6 +70,9 @@ public:
 
 	UFUNCTION()
 	void PlayKnockDown();
+
+	UFUNCTION()
+	void PlayClearWhidget();
 
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
