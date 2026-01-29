@@ -5,16 +5,21 @@ void UMovingMonsterAnimInstance::NativeInitializeAnimation()
 {
     Super::NativeInitializeAnimation();
 
-    Monster = Cast<AMovingMonster>(TryGetPawnOwner());
-
-    
-
-    if (Monster)
-    {
-        bIsDead = Monster->bIsDead; // Monsterのフラグをコピー
-    }
-
-    Montage_SetEndDelegate(MontageEndDelegate);
+    OwnerMonster = Cast<AMovingMonster>(TryGetPawnOwner());
 }
 
+void UMovingMonsterAnimInstance::PlayRoar()
+{
+    if (RoarMontage)
+    {
+        Montage_Play(RoarMontage);
+    }
+}
 
+void UMovingMonsterAnimInstance::PlayTakeOff()
+{
+    if (TakeOffMontage)
+    {
+        Montage_Play(TakeOffMontage);
+    }
+}

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Sound/SoundBase.h"
 #include "SpeedPadActor.generated.h"
 
 UCLASS()
@@ -27,6 +28,9 @@ public:
     UFUNCTION()
     void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+    UPROPERTY(EditAnywhere, Category = "Sound")
+    USoundBase* SpeedSE;
 
 public:
     // メッシュ

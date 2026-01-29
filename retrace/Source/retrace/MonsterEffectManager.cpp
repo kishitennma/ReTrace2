@@ -1,6 +1,5 @@
 ﻿#include "MonsterEffectManager.h"
 #include "Kismet/GameplayStatics.h"
-#include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "Engine/PostProcessVolume.h"
 
@@ -13,12 +12,9 @@ void AMonsterEffectManager::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (!PostProcessVolume)
-    {
-        PostProcessVolume = Cast<APostProcessVolume>(
-            UGameplayStatics::GetActorOfClass(GetWorld(), APostProcessVolume::StaticClass())
-        );
-    }
+    PostProcessVolume = Cast<APostProcessVolume>(
+        UGameplayStatics::GetActorOfClass(GetWorld(), APostProcessVolume::StaticClass())
+    );
 
     if (PostProcessVolume)
     {
@@ -39,22 +35,55 @@ void AMonsterEffectManager::Tick(float DeltaTime)
     if (bIsDying)
     {
         UpdateDeathFade(DeltaTime);
-        return; // ← 距離演出を止める
+        return;
     }
 
-    // 毎フレーム距離をチェック！
-    if (PlayerRef && MonsterRef && !bIsDying)
+    if (PlayerRef && MonsterRef && PostProcessVolume)
     {
-        UpdateEffect(PlayerRef, MonsterRef);
+        UpdateEffect(DeltaTime);
     }
 }
 
-void AMonsterEffectManager::UpdateEffect(ACharacter* Player, AActor* Monster)
+void AMonsterEffectManager::UpdateEffect(float DeltaTime)
 {
-    if (!Player || !Monster || !PostProcessVolume) return;
+    const float Distance = FVector::Dist(
+        PlayerRef->GetActorLocation(),
+        MonsterRef->GetActorLocation()
+    );
 
-    float Distance = FVector::Dist(Player->GetActorLocation(), Monster->GetActorLocation());
-    float Intensity = FMath::Clamp(1.f - Distance / 1000.f, 0.f, 1.f);
+    HandleProximitySE(Distance);
+    HandlePostProcess(Distance);
+}
+
+// ===== 距離SE =====
+void AMonsterEffectManager::HandleProximitySE(float Distance)
+{
+    if (!ProximitySE) return;
+
+    if (Distance <= ProximitySEDistance)
+    {
+        // 外 → 中 に入った瞬間だけ鳴らす
+        if (!bIsPlayerInsideSEArea)
+        {
+            UGameplayStatics::PlaySound2D(this, ProximitySE);
+            bIsPlayerInsideSEArea = true;
+        }
+    }
+    else
+    {
+        // 一度離れたらリセット
+        bIsPlayerInsideSEArea = false;
+    }
+}
+
+// ===== ポストプロセス =====
+void AMonsterEffectManager::HandlePostProcess(float Distance)
+{
+    const float Intensity = FMath::Clamp(
+        1.f - Distance / EffectStartDistance,
+        0.f,
+        1.f
+    );
 
     FPostProcessSettings& Settings = PostProcessVolume->Settings;
 
@@ -62,49 +91,46 @@ void AMonsterEffectManager::UpdateEffect(ACharacter* Player, AActor* Monster)
     Settings.bOverride_SceneColorTint = true;
 
     Settings.VignetteIntensity = FMath::Lerp(0.3f, 2.5f, Intensity);
-    Settings.SceneColorTint = FLinearColor(1.f, 1.f - 0.6f * Intensity, 1.f - 0.6f * Intensity);
+    Settings.SceneColorTint =
+        FLinearColor(1.f, 1.f - 0.6f * Intensity, 1.f - 0.6f * Intensity);
 }
 
+// ===== 死亡フェード =====
 void AMonsterEffectManager::StartDeathFade()
 {
     bIsDying = true;
-    DeathFadeAlpha = 0.0f;
+    DeathFadeAlpha = 0.f;
 }
 
 void AMonsterEffectManager::UpdateDeathFade(float DeltaTime)
 {
-    if (bIsDying && PostProcessVolume)
+    DeathFadeAlpha += DeltaTime / DeathFadeDuration;
+
+    const float Fade = FMath::Clamp(DeathFadeAlpha, 0.f, 1.f);
+
+    if (PostProcessVolume)
     {
-        DeathFadeAlpha += DeltaTime / DeathFadeDuration;
-
-        float Fade = FMath::Clamp(DeathFadeAlpha, 0.f, 1.f);
-
         PostProcessVolume->Settings.bOverride_SceneColorTint = true;
         PostProcessVolume->Settings.SceneColorTint =
             FMath::Lerp(FLinearColor::White, FLinearColor::Black, Fade);
-
-
-        // ★ 完了判定
-        if (DeathFadeAlpha >= 1.0f)
-        {
-            DeathFadeAlpha = 1.0f;
-          
-            OnDeathFadeFinished();   
-        }
     }
 
+    if (DeathFadeAlpha >= 1.f)
+    {
+        OnDeathFadeFinished();
+    }
 }
 
 void AMonsterEffectManager::OnDeathFadeFinished()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Death Fade Finished"));
-    OnDeathFadeFinishedEvent.Broadcast(); 
+    bIsDying = false;
+    OnDeathFadeFinishedEvent.Broadcast();
 }
 
 void AMonsterEffectManager::ResetDeathState()
 {
     bIsDying = false;
-    DeathFadeAlpha = 0.0f;
+    DeathFadeAlpha = 0.f;
 
     if (PostProcessVolume)
     {
@@ -114,8 +140,6 @@ void AMonsterEffectManager::ResetDeathState()
         Settings.bOverride_VignetteIntensity = false;
 
         Settings.SceneColorTint = FLinearColor::White;
-        Settings.VignetteIntensity = 0.3f; // 通常値に戻す
+        Settings.VignetteIntensity = 0.3f;
     }
 }
-
-

@@ -23,6 +23,7 @@ void UClearWidget::OnButtonTitle()
 
 void UClearWidget::OnButtonStageSelect()
 {
-    UE_LOG(LogTemp, Warning, TEXT("stageslect"));
+    UE_LOG(LogTemp, Warning, TEXT("stageselect"));
+    UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("stageselect")));
    
 }

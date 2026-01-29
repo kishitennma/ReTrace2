@@ -2,6 +2,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ASpeedPadActor::ASpeedPadActor()
@@ -72,6 +73,16 @@ void ASpeedPadActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor*
 
     OverlappingPlayer = Player;
     SetActorTickEnabled(true);
+
+    if (SpeedSE)
+    {
+        UGameplayStatics::PlaySoundAtLocation(
+            this,
+            SpeedSE,
+            SweepResult.ImpactPoint   // Åö èCê≥ì_
+        );
+    }
+    
 }
 
 void ASpeedPadActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,

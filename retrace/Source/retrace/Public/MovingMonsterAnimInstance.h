@@ -14,13 +14,22 @@ class RETRACE_API UMovingMonsterAnimInstance : public UAnimInstance
 public:
     virtual void NativeInitializeAnimation() override;
 
-   
+    // Monster èÛë‘
+    UPROPERTY(BlueprintReadOnly)
+    bool bIsFlying = false;
 
-    UPROPERTY(BlueprintReadWrite, Category = "Animation")
-    bool bIsDead;
+    // Montages
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+    UAnimMontage* RoarMontage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+    UAnimMontage* TakeOffMontage;
+
+    /** åƒÇ—èoÇµóp */
+    void PlayRoar();
+    void PlayTakeOff();
 
 private:
-    AMovingMonster* Monster = nullptr;
-
-    FOnMontageEnded MontageEndDelegate;
+    UPROPERTY()
+    AMovingMonster* OwnerMonster;
 };
