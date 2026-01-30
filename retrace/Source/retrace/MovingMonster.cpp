@@ -7,6 +7,9 @@
 #include "MyCharacter.h"
 #include "MovingMonsterAnimInstance.h"
 
+// =====================
+// Constructor
+// =====================
 AMovingMonster::AMovingMonster()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -21,52 +24,49 @@ AMovingMonster::AMovingMonster()
 
     GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
     GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+
+    // ゴール演出フラグ初期化
+    bHasStartedRoar = false;
+    bHasStartedTakeOff = false;
 }
 
+// =====================
+// BeginPlay
+// =====================
 void AMovingMonster::BeginPlay()
 {
     Super::BeginPlay();
 
-    HitCollision->OnComponentBeginOverlap.AddDynamic(
-        this,
-        &AMovingMonster::OnOverlapBegin
-    );
+    HitCollision->OnComponentBeginOverlap.AddDynamic(this, &AMovingMonster::OnOverlapBegin);
+    GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AMovingMonster::OnMonsterHit);
 
-    GetCapsuleComponent()->OnComponentHit.AddDynamic(
-        this,
-        &AMovingMonster::OnMonsterHit
-    );
-
-    MonsterAnim = Cast<UMovingMonsterAnimInstance>(
-        GetMesh()->GetAnimInstance());
-        if (!MonsterAnim)
-        {
-            UE_LOG(LogTemp, Error, TEXT("MonsterAnim is NULL"));
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("MonsterAnim OK"));
-        }
-
-    
+    MonsterAnim = Cast<UMovingMonsterAnimInstance>(GetMesh()->GetAnimInstance());
+    if (!MonsterAnim)
+    {
+        UE_LOG(LogTemp, Error, TEXT("MonsterAnim is NULL"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("MonsterAnim OK"));
+    }
 }
 
+// =====================
+// Tick
+// =====================
 void AMovingMonster::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
     if (!bIsActive || bIsDead) return;
 
-    FVector NewLocation =
-        GetActorLocation() + GetActorForwardVector() * MoveSpeed * DeltaTime;
-
+    FVector NewLocation = GetActorLocation() + GetActorForwardVector() * MoveSpeed * DeltaTime;
     SetActorLocation(NewLocation, false);
 }
 
-// --------------------
+// =====================
 // 通常挙動
-// --------------------
-
+// =====================
 void AMovingMonster::ActivateMonster()
 {
     bIsActive = true;
@@ -78,8 +78,7 @@ void AMovingMonster::OnOverlapBegin(
     UPrimitiveComponent* OtherComp,
     int32 OtherBodyIndex,
     bool bFromSweep,
-    const FHitResult& SweepResult
-)
+    const FHitResult& SweepResult)
 {
     AMyCharacter* Player = Cast<AMyCharacter>(OtherActor);
     if (!Player) return;
@@ -87,10 +86,9 @@ void AMovingMonster::OnOverlapBegin(
     Player->PlayKnockDown();
 }
 
-// --------------------
+// =====================
 // ゴール演出開始
-// --------------------
-
+// =====================
 void AMovingMonster::OnGoalReached()
 {
     if (bIsDead) return;
@@ -102,38 +100,49 @@ void AMovingMonster::OnGoalReached()
     GetCharacterMovement()->DisableMovement();
     GetCharacterMovement()->Velocity = FVector::ZeroVector;
 
-    if (MonsterAnim)
+    // --------------------
+    // 咆哮開始（Montage再生）
+    // --------------------
+    if (MonsterAnim && !bHasStartedRoar)
     {
-        MonsterAnim->PlayRoar(); // 咆哮開始
+        if (MonsterAnim->RoarMontage)
+        {
+            bHasStartedRoar = true;
+            MonsterAnim->Montage_Play(MonsterAnim->RoarMontage);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("RoarMontage is NULL! Check AnimBP"));
+        }
     }
 }
 
-// --------------------
+// =====================
 // AnimNotify から呼ばれる
-// --------------------
-
+// =====================
 void AMovingMonster::OnRoarFinished()
 {
-    if (MonsterAnim)
+    if (MonsterAnim && !bHasStartedTakeOff)
     {
-        MonsterAnim->PlayTakeOff();
+        if (MonsterAnim->TakeOffMontage)
+        {
+            bHasStartedTakeOff = true;
+            MonsterAnim->Montage_Play(MonsterAnim->TakeOffMontage);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("TakeOffMontage is NULL! Check AnimBP"));
+        }
     }
 }
 
 void AMovingMonster::OnTakeOffFinished()
 {
-    if (MonsterAnim)
-    {
-        MonsterAnim->bIsFlying = true; // FlyForward へ
-    }
+    bIsFlying = true;
 
     // ここが「逃げ切った」タイミング
     AMyCharacter* Player = Cast<AMyCharacter>(
-        UGameplayStatics::GetActorOfClass(
-            GetWorld(),
-            AMyCharacter::StaticClass()
-        )
-    );
+        UGameplayStatics::GetActorOfClass(GetWorld(), AMyCharacter::StaticClass()));
 
     if (Player)
     {
@@ -141,59 +150,29 @@ void AMovingMonster::OnTakeOffFinished()
     }
 }
 
-// --------------------
-// 既存：死亡演出（残す）
-// --------------------
 
-void AMovingMonster::PlayDeath()
-{
-    if (bIsDead) return;
 
-    bIsDead = true;
-    bIsActive = false;
 
-    GetCharacterMovement()->StopMovementImmediately();
-    GetCharacterMovement()->DisableMovement();
-    GetCharacterMovement()->Velocity = FVector::ZeroVector;
-
-    if (UAnimInstance* Anim = GetMesh()->GetAnimInstance())
-    {
-        Anim->Montage_Play(DeathMontage);
-    }
-}
-
-// --------------------
+// =====================
 // ヒットSE
-// --------------------
-
+// =====================
 void AMovingMonster::OnMonsterHit(
     UPrimitiveComponent* HitComp,
     AActor* OtherActor,
     UPrimitiveComponent* OtherComp,
     FVector NormalImpulse,
-    const FHitResult& Hit
-)
+    const FHitResult& Hit)
 {
     if (!bCanPlayHitSound || !HitSound) return;
 
     if (OtherComp && OtherComp->IsA<UGeometryCollectionComponent>())
     {
-        UGameplayStatics::PlaySoundAtLocation(
-            this,
-            HitSound,
-            Hit.ImpactPoint
-        );
-
+        UGameplayStatics::PlaySoundAtLocation(this, HitSound, Hit.ImpactPoint);
         bCanPlayHitSound = false;
 
-        GetWorldTimerManager().SetTimer(
-            HitSoundTimer,
-            [this]()
+        GetWorldTimerManager().SetTimer(HitSoundTimer, [this]()
             {
                 bCanPlayHitSound = true;
-            },
-            HitSoundCooldown,
-            false
-        );
+            }, HitSoundCooldown, false);
     }
 }

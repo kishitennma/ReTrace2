@@ -36,26 +36,19 @@ public:
     void OnGoalReached();
 
     // ====================
-    // クリア演出（AnimNotify から）
+    // クリア演出（AnimNotify から呼ばれる）
     // ====================
 
-    /** 咆哮終了 */
+    /** 咆哮終了通知 */
     UFUNCTION()
     void OnRoarFinished();
 
-    /** TakeOff 終了 */
+    /** TakeOff終了通知 */
     UFUNCTION()
     void OnTakeOffFinished();
 
-    // ====================
-    // 既存：死亡演出
-    // ====================
-
-    UPROPERTY(EditAnywhere, Category = "Animation")
-    UAnimMontage* DeathMontage;
-
-    void PlayDeath();
-
+  
+  
     // ====================
     // 状態
     // ====================
@@ -64,8 +57,13 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster")
     bool bIsActive = false;
 
+    /** 死亡済みフラグ */
     UPROPERTY(BlueprintReadWrite, Category = "State")
     bool bIsDead = false;
+
+    /** 飛行中フラグ（StateMachine切り替え用） */
+    UPROPERTY(BlueprintReadWrite, Category = "State")
+    bool bIsFlying = false;
 
     // ====================
     // Collision
@@ -106,9 +104,16 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Sound")
     USoundBase* HitSound;
 
-    /** 多重再生防止 */
+    /** ヒット音の多重再生防止フラグ */
     bool bCanPlayHitSound = true;
+    UPROPERTY(BlueprintReadWrite, Category = "Monster|State")
+    bool bHasStartedRoar = false;
 
+    // TakeOff の再生フラグ
+    UPROPERTY(BlueprintReadWrite, Category = "Monster|State")
+    bool bHasStartedTakeOff = false;
+
+    /** ヒット音再生間隔 */
     UPROPERTY(EditAnywhere, Category = "Sound")
     float HitSoundCooldown = 0.3f;
 
@@ -118,6 +123,7 @@ protected:
     // Effect / Anim
     // ====================
 
+    /** エフェクトマネージャ参照 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect")
     AMonsterEffectManager* EffectManager;
 
@@ -129,7 +135,7 @@ protected:
     // Movement
     // ====================
 
-    /** BP で編集できる速度 */
+    /** BPで編集可能な移動速度 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster")
     float MoveSpeed = 300.0f;
 };

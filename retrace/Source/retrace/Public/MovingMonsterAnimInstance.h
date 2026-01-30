@@ -1,10 +1,9 @@
+// MovingMonsterAnimInstance.h
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "MovingMonsterAnimInstance.generated.h"
-
-class AMovingMonster;
 
 UCLASS()
 class RETRACE_API UMovingMonsterAnimInstance : public UAnimInstance
@@ -12,24 +11,22 @@ class RETRACE_API UMovingMonsterAnimInstance : public UAnimInstance
     GENERATED_BODY()
 
 public:
-    virtual void NativeInitializeAnimation() override;
-
-    // Monster èÛë‘
-    UPROPERTY(BlueprintReadOnly)
-    bool bIsFlying = false;
-
-    // Montages
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     UAnimMontage* RoarMontage;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Anim")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     UAnimMontage* TakeOffMontage;
 
-    /** åƒÇ—èoÇµóp */
-    void PlayRoar();
-    void PlayTakeOff();
+    // FlyForward ÇÕ StateMachine ÇÃ bool Ç≈êßå‰
+    UPROPERTY(BlueprintReadWrite, Category = "Animation")
+    bool bIsFlying = false;
 
-private:
-    UPROPERTY()
-    AMovingMonster* OwnerMonster;
+    // --------------------
+    // C++Ç©ÇÁåƒÇ‘ä÷êî
+    // --------------------
+    UFUNCTION(BlueprintCallable)
+    void PlayRoar();
+
+    UFUNCTION(BlueprintCallable)
+    void PlayTakeOff();
 };
