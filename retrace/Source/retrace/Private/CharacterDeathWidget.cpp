@@ -3,6 +3,7 @@
 
 #include "CharacterDeathWidget.h"
 #include "Components/Button.h"
+#include "SoundGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -18,6 +19,9 @@ void UCharacterDeathWidget::NativeConstruct()
 
 void UCharacterDeathWidget:: OnButtonRetry()
 {
+    if (GI)
+        GI->PlayUISound(clicksound);
+
     if (AMyCharacter* Player = Cast<AMyCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
     {
         Player->Retry();
@@ -26,6 +30,10 @@ void UCharacterDeathWidget:: OnButtonRetry()
 
 void UCharacterDeathWidget::OnButtonStageSelect()
 {
+
+    if (GI)
+        GI->PlayUISound(clicksound);
+    GI->bShouldPlayBGM = false;
     UE_LOG(LogTemp, Warning, TEXT("StageSlect"));
     UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("stageselect")));
 }

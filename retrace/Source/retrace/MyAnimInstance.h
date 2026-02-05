@@ -29,7 +29,7 @@ public:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly,Category = Movement)
 	class AMyCharacter* MyChar;
 
-
+	
 
 	
 };

@@ -4,6 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "StageSelectWidget.generated.h"
 
+class USoundGameInstance;
+
 class UButton;
 
 UCLASS()
@@ -25,6 +27,15 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> Stage3;
+
+    UPROPERTY(EditAnywhere, Category = "Sound")
+    USoundBase* clicksound;
+    UPROPERTY(EditAnywhere, Category = "Sound")
+    USoundBase* startsound;
+    UPROPERTY(EditAnywhere, Category = "Sound")
+    USoundBase* TitleBGM;
+    UPROPERTY()
+    USoundGameInstance* GI;
 
 private:
     UFUNCTION()

@@ -7,6 +7,7 @@
 #include "retrace/MyCharacter.h"
 #include "ClearWidget.generated.h"
 
+class USoundGameInstance;
 class UButton;
 /**
  * 
@@ -15,6 +16,11 @@ UCLASS()
 class RETRACE_API UClearWidget : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* clicksound;
+	UPROPERTY()
+	USoundGameInstance* GI;
 protected:
 	virtual void NativeConstruct() override;
 

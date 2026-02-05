@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MainMenuWidget.generated.h"
 
+class USoundGameInstance;
 
 class UButton;
 /**
@@ -24,6 +25,13 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* ButtonQuit;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* clicksound;
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* TitleBGM;
+	UPROPERTY()
+	USoundGameInstance* GI;
 
 	UFUNCTION()
 	void OnButtonPlayClicked();

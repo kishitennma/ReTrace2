@@ -3,6 +3,7 @@
 
 #include "MainMenuWidget.h"
 #include "Components/Button.h"
+#include "SoundGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -10,7 +11,12 @@
 void UMainMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	GI =
+		Cast<USoundGameInstance>(GetGameInstance());
+	if (GI)
+	{
+		GI->PlayBGM(TitleBGM);
+	}
 	ButtonPlay->OnClicked.AddUniqueDynamic(this, &UMainMenuWidget::OnButtonPlayClicked);
 
 	// ButtonQuit‚ÌOnClicked‚ÉuOnButtonQuitClickedv‚ðŠÖ˜A‚Ã‚¯‚é
@@ -21,7 +27,8 @@ void UMainMenuWidget::OnButtonPlayClicked()
 {
 	// GameInstance‚Ì•Ï”‚ð‰Šú‰»‚·‚é
 	
-	
+	if (GI)
+		GI->PlayUISound(clicksound);
 
 	// Level01‚ðLoad‚·‚é
 	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("stageselect")));
@@ -30,6 +37,9 @@ void UMainMenuWidget::OnButtonPlayClicked()
 
 void UMainMenuWidget::OnButtonQuitClicked()
 {
+	if (GI)
+		GI->PlayUISound(clicksound);
+
 	// PlayerController‚ðŽæ“¾‚·‚é
 	if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
 	{

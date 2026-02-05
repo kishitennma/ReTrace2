@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
+#include "SoundGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
@@ -46,6 +47,12 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (USoundGameInstance* GI =
+		Cast<USoundGameInstance>(GetGameInstance()))
+	{
+		GI->StopBGM();
+	}
+
 	DefaultDistance = CameraBoom->TargetArmLength;
 	DefaultAngle = CameraBoom->GetRelativeRotation();
 	DefaultOffset = CameraBoom->SocketOffset;
@@ -81,28 +88,32 @@ void AMyCharacter::Tick(float DeltaTime)
 	bIsMoving = (Speed > 10.0f);
 
 	// ★ 足音処理
-	if (bIsMoving && FootstepSound)
-	{
-		FootstepTimer += DeltaTime;
+	//if (bIsMoving && FootstepSound)
+	//{
+	//	FootstepTimer += DeltaTime;
 
-		if (FootstepTimer >= FootstepInterval)
-		{
-			UGameplayStatics::PlaySoundAtLocation(
-				GetWorld(),          // ← ここを this ではなく GetWorld() に修正
-				FootstepSound,
-				GetActorLocation()
-			);
+	//	if (FootstepTimer >= FootstepInterval)
+	//	{
+	//		UGameplayStatics::PlaySoundAtLocation(
+	//			GetWorld(),          // ← ここを this ではなく GetWorld() に修正
+	//			FootstepSound,
+	//			GetActorLocation()
+	//		);
 
-			FootstepTimer = 0.0f;
-		}
-	}
+	//		FootstepTimer = 0.0f;
+	//	}
+	//}
 
 	// ★ カメラ揺れ（元の機能）
 	if (bIsShaking && CameraBoom)
 	{
 		ShakeTimer += DeltaTime;
 		float Alpha = ShakeTimer / ShakeDuration;
-
+		UGameplayStatics::PlaySoundAtLocation(
+						GetWorld(),          // ← ここを this ではなく GetWorld() に修正
+				gogogosound,
+				GetActorLocation()
+				);
 		float CurrentIntensity = ShakeIntensity * (1.0f - Alpha);
 		if (CurrentIntensity <= 0.0f)
 		{
@@ -200,7 +211,14 @@ void AMyCharacter::PlayKnockDown()
 
 	// 向き固定（任意）
 	bUseControllerRotationYaw = false;
-
+	if (Knock)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(),
+			Knock,
+			GetActorLocation()
+		);
+	}
 	// モンタージュ再生
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
 	{
@@ -245,7 +263,10 @@ void AMyCharacter::Retry()
 	{
 		MonsterEffectManager->ResetDeathState();
 	}
-
+	USoundGameInstance* GI =
+		Cast<USoundGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (!GI)return;
+	GI->bShouldPlayBGM = false;
 	// 入力モードを戻す
 	if (APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
@@ -287,7 +308,19 @@ void AMyCharacter::PlayClearWhidget()
 			ClearWidgetClass
 		);
 	}
-
+	USoundGameInstance* GI =
+		Cast<USoundGameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (!GI)return;
+	GI->bShouldPlayBGM = false;
+	
+	if (clear)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			GetWorld(),
+			clear,
+			GetActorLocation()
+		);
+	}
 
 	if (ClearWidget && !ClearWidget->IsInViewport())
 	{
@@ -302,9 +335,29 @@ void AMyCharacter::PlayClearWhidget()
 	}
 }
 
+void AMyCharacter::PlayerGoal()
+{
+	//移動停止
+	GetCharacterMovement()->DisableMovement();
+	MonsterEffectManager = Cast<AMonsterEffectManager>(
+		UGameplayStatics::GetActorOfClass(
+			GetWorld(),
+			AMonsterEffectManager::StaticClass()));
+}
 
+void AMyCharacter::ApplyClearCamera(
+	FRotator CameraRotation,
+	float CameraDistance,
+	FVector CameraOffset
+)
+{
+	if (!CameraBoom) return;
 
-
+	CameraBoom->SetUsingAbsoluteRotation(true);
+	CameraBoom->SetWorldRotation(CameraRotation);
+	CameraBoom->TargetArmLength = CameraDistance;
+	CameraBoom->SetRelativeLocation(CameraOffset);
+}
 
 void AMyCharacter::ApplyDeathCamera(
 	FRotator CameraRotation,

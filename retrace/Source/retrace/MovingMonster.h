@@ -21,6 +21,15 @@ public:
 protected:
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaTime) override;
+   UFUNCTION()
+    void StartFlyForward();
+    /** Roar Montage 完了 */
+    UFUNCTION()
+    void OnRoarMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+
+    /** TakeOff Montage 完了 */
+    UFUNCTION()
+    void OnTakeOffMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 public:
     // ====================
@@ -34,25 +43,19 @@ public:
     /** プレイヤーがゴールしたら呼ばれる */
     UFUNCTION(BlueprintCallable)
     void OnGoalReached();
+    //咆哮
+    UPROPERTY(EditAnywhere, Category = "Sound")
+    USoundBase* RoarSound;
+    UPROPERTY(EditAnywhere, Category = "Sound")
+    USoundBase* MonsterStep;
 
-    // ====================
-    // クリア演出（AnimNotify から呼ばれる）
-    // ====================
+    UPROPERTY(EditAnywhere, Category = "Sound")
+    USoundBase* MonsterWing;
 
-    /** 咆哮終了通知 */
-    UFUNCTION()
-    void OnRoarFinished();
+    bool wallbreak = false;
 
-    /** TakeOff終了通知 */
-    UFUNCTION()
-    void OnTakeOffFinished();
-
-  
-  
-    // ====================
-    // 状態
-    // ====================
-
+    bool bCanPlayRoarSound = true;
+   
     /** 移動中フラグ */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster")
     bool bIsActive = false;
@@ -71,6 +74,10 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
     UBoxComponent* HitCollision;
+
+    UPROPERTY(VisibleAnywhere)
+    USceneComponent* MeshRoot;
+
 
 protected:
     // ====================
@@ -103,6 +110,7 @@ protected:
     /** GeometryCollection ヒット音 */
     UPROPERTY(EditAnywhere, Category = "Sound")
     USoundBase* HitSound;
+    
 
     /** ヒット音の多重再生防止フラグ */
     bool bCanPlayHitSound = true;
@@ -113,12 +121,14 @@ protected:
     UPROPERTY(BlueprintReadWrite, Category = "Monster|State")
     bool bHasStartedTakeOff = false;
 
+   
+
     /** ヒット音再生間隔 */
     UPROPERTY(EditAnywhere, Category = "Sound")
     float HitSoundCooldown = 0.3f;
 
     FTimerHandle HitSoundTimer;
-
+    FTimerHandle ClearWidgetTimerHandle;
     // ====================
     // Effect / Anim
     // ====================
@@ -135,7 +145,19 @@ protected:
     // Movement
     // ====================
 
+
+    FVector InitialForward;       // TakeOff前の進行方向を保持
+    FRotator InitialMeshRotation; // メッシュの初期回転
+    bool bRotatingForTakeOff = false;
+    float TakeOffRotateElapsed = 0.f;
+    float TakeOffRotateDuration = 1.f;
+    FRotator TakeOffStartMeshRotation;
+    FRotator TakeOffTargetMeshRotation;
+
     /** BPで編集可能な移動速度 */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster")
     float MoveSpeed = 300.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Monster|Fly")
+    float FlySpeed = 600.f;
 };

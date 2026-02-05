@@ -1,5 +1,8 @@
 // MovingMonsterAnimInstance.cpp
 #include "MovingMonsterAnimInstance.h"
+#include "retrace/MovingMonster.h"    
+#include "Animation/AnimInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 void UMovingMonsterAnimInstance::PlayRoar()
@@ -19,6 +22,20 @@ void UMovingMonsterAnimInstance::PlayRoar()
 
     Montage_Play(RoarMontage);
 }
+
+void UMovingMonsterAnimInstance::Notify_RoarSound(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
+{
+    if (AMovingMonster* Monster = Cast<AMovingMonster>(MeshComp->GetOwner()))
+    {
+        if (Monster->RoarSound && Monster->bCanPlayRoarSound)
+        {
+            UGameplayStatics::PlaySoundAtLocation(Monster, Monster->RoarSound, Monster->GetActorLocation());
+            Monster->bCanPlayRoarSound = false;
+        }
+    }
+}
+
+
 
 void UMovingMonsterAnimInstance::PlayTakeOff()
 {

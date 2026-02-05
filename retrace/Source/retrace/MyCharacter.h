@@ -22,6 +22,8 @@ class RETRACE_API AMyCharacter : public ACharacter
 
 public:
 	AMyCharacter();
+	UFUNCTION()
+	void PlayerGoal();
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,6 +48,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyClearCamera(
+		FRotator CameraRotation,
+		float CameraDistance,
+		FVector CameraOffset
+	);
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyDeathCamera(
@@ -83,6 +92,12 @@ public:
 	// ★ 足音
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* FootstepSound;
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* gogogosound;
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* Knock;
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* clear;
 
 	bool bIsMoving = false;
 	float FootstepTimer = 0.0f;

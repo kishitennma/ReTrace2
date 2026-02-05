@@ -28,6 +28,15 @@ protected:
         const FHitResult& SweepResult
     );
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+    FVector NewCameraOffset;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+    FRotator NewCameraRotation;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Change")
+    float NewCameraDistance;
+
 public:
     UPROPERTY(VisibleAnywhere)
     class UBoxComponent* CollisionBox;

@@ -55,6 +55,11 @@ void AGoalActor::OnOverlapBegin(
     if (!Monster) return;
 
     Monster->OnGoalReached();
+    Player->PlayerGoal();
+    Player->ApplyDeathCamera(
+        NewCameraRotation,
+        NewCameraDistance,
+        NewCameraOffset);
   
     UE_LOG(LogTemp, Warning, TEXT("Goal Overlap with: %s"), *OtherActor->GetName());
 

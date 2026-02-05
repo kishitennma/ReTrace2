@@ -5,6 +5,8 @@
 #include "Animation/AnimInstance.h"
 #include "MovingMonsterAnimInstance.generated.h"
 
+class AMovingMonster;
+
 UCLASS()
 class RETRACE_API UMovingMonsterAnimInstance : public UAnimInstance
 {
@@ -29,4 +31,8 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void PlayTakeOff();
+
+    // AnimNotifyópÅFRoarÇÃâπ
+    UFUNCTION(BlueprintCallable)
+    void Notify_RoarSound(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation);
 };
